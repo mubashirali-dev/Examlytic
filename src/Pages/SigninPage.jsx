@@ -1,0 +1,132 @@
+import React from "react";
+import Navbar from "../components/Navbar";
+
+export default function LoginPage() {
+  return (
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-white flex flex-col ">
+        {/* MAIN CARD */}
+        <div className="flex justify-center py-10 px-4">
+          <div className="w-full max-w-6xl bg-white rounded-3xl shadow-xl flex flex-col md:flex-row overflow-hidden">
+            {/* LEFT SIDE (FORM) */}
+            <div className="w-full md:w-1/2 p-6 md:p-12">
+              <h2 className="text-[#0F6B75] text-2xl md:text-3xl font-bold mb-6">
+                Sign in to your account
+              </h2>
+              <form className="flex flex-col gap-4">
+               <label className="text-gray-700 font-semibold">Full name</label>
+                <input type="email" className="border border-gray-300 rounded-lg px-4 py-3" />
+
+                <label className="text-gray-700 font-semibold">Email Address</label>
+                <input type="email" className="border border-gray-300 rounded-lg px-4 py-3" />
+
+                <label className="text-gray-700 font-semibold">Password</label>
+                <input type="password" className="border border-gray-300 rounded-lg px-4 py-3" />
+
+                {/* I am a... */}
+                <label className="text-gray-700 font-semibold mt-2">I am a...</label>
+                <div className="flex items-center gap-4 mt-2">
+                  <label className="flex items-center gap-2 border rounded-lg px-4 py-2 cursor-pointer">
+                    <input type="radio" name="role" /> Student
+                  </label>
+                  <label className="flex items-center gap-2 border rounded-lg px-4 py-2 cursor-pointer">
+                    <input type="radio" name="role" /> Teacher
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between text-sm text-gray-600 mt-1">
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" /> Remember Me
+                  </label>
+                  <a href="#" className="text-[#0F6B75] font-semibold">
+                    Forgot your password?
+                  </a>
+                </div>
+
+                {/* MOBILE + DESKTOP BUTTONS */}
+                <div className="mt-4">
+                  {/* MOBILE Divider */}
+                  <div className="md:hidden flex items-center mb-4">
+                    <hr className="flex-1 border-gray-300" />
+                    <span className="mx-2 text-gray-400 text-sm">Or continue with</span>
+                    <hr className="flex-1 border-gray-300" />
+                  </div>
+
+                  {/* MOBILE BUTTONS */}
+                  <div className="md:hidden flex flex-col gap-3 items-center">
+                    <button className="bg-[#0F6B75] text-white rounded-lg py-3 font-medium shadow-md w-[85%]">
+                      Login
+                    </button>
+                    <button
+                      type="button"
+                      className="flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-3 font-medium w-[85%]"
+                    >
+                      <img src="/google 1.png" alt="Google" className="w-5 h-5" />
+                      Google
+                    </button>
+                  </div>
+
+                  {/* DESKTOP VIEW */}
+                  <div className="hidden md:block">
+                  <button
+  className="w-full bg-[#0F6B75] text-white rounded-lg py-3 font-medium shadow-md"
+  onClick={() => setPage("main")} // ya jis page pe jana hai
+>
+  Login
+</button>
+                    <div className="flex items-center my-4">
+                      <hr className="flex-1 border-gray-300" />
+                      <span className="mx-2 text-gray-400 text-sm">Or continue with</span>
+                      <hr className="flex-1 border-gray-300" />
+                    </div>
+                    <button
+                      type="button"
+                      className="flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-3 font-medium w-[80%] mx-auto"
+                    >
+                      <img src="/google 1.png" alt="Google" className="w-6 h-6" />
+                      Google
+                    </button>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600 mt-4">
+                  Don,t have an account?{" "}
+                  <a href="#" className="text-[#0F6B75] font-semibold">
+                    Signup here
+                  </a>
+                </p>
+              </form>
+            </div>
+
+            {/* RIGHT SIDE IMAGE */}
+            <div className="hidden md:flex w-1/2 bg-white items-center justify-center p-8">
+              <img src="/amico.png" alt="amico" />
+            </div>
+          </div>
+        </div>
+
+        {/* RESPONSIVE FOOTER */}
+        <footer className="bg-[#0F6B75] text-white text-center py-6 mt-auto">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start px-6">
+            {/* LEFT (LINKS) */}
+            <div className="flex flex-col md:gap-2 mb-4 md:mb-0 text-sm font-medium md:text-left text-center">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Terms of Service</a>
+              <a href="#">Contact Us</a>
+            </div>
+
+            {/* RIGHT (ICONS) */}
+            <div className="flex flex-col items-center md:items-end md:gap-2">
+              <div className="w-10 h-10"><img src="/twitter 1.png" alt="twitter" /></div>
+              <div className="w-10 h-10"><img src="/instagram 1.png" alt="instagram" /></div>
+              <div className="w-10 h-10"><img src="/facebook 1.png" alt="facebook" /></div>
+            </div>
+          </div>
+
+          <p className="text-white text-sm mt-3">2025 Examlytic. All rights reserved</p>
+        </footer>
+      </div>
+    </>
+  );
+}
