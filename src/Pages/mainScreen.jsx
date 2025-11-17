@@ -47,7 +47,7 @@ export default function HomePage() {
 
         {/* HERO SECTION */}
         <div className="flex justify-center">
-          <div className="max-w-5xl w-full bg-[#0F6B75] text-white rounded-xl p-10">
+          <div className="max-w-7xl w-full bg-[#0F6B75] text-white rounded-xl p-10">
             <h1 className="text-4xl font-bold leading-tight">
               AI-Powered Exams.<br />Smarter Learning.<br />Secure Future.
             </h1>
@@ -74,15 +74,15 @@ export default function HomePage() {
         </div>
 
         {/* KEY FEATURES HEADING */}
-        <div className="text-center mt-10">
+        <div className="text-center mt-2">
           <h2 className="text-4xl font-bold">Key Features</h2>
-          <p className="text-sm mt-2 max-w-md mx-auto">
+          <p className="text-sm mt-1 max-w-md mx-auto">
             Examlytic offers a comprehensive suite of features designed to enhance the examination experience for both educator and learner.
           </p>
         </div>
 
 {/* IMAGE ONLY SLIDER */}
-<div className="max-w-4xl mx-auto mt-6 bg-white rounded-xl p-2 flex items-center justify-center">
+<div className="max-w-4xl mx-auto mt-0 bg-white rounded-xl p-2 flex items-center justify-center">
   <img
     src={features[currentSlide].img}
     className="w-[650px] h-[300px] object-contain"
