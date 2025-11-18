@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar.jsx";
+import { useNavigate } from "react-router-dom";
 export default function HomePage() {
+    const navigate = useNavigate();
   const features = [
     {
       title: "Smart Proctoring",
@@ -59,16 +61,20 @@ export default function HomePage() {
 
             {/* Buttons restored */}
             <div className="flex gap-4 mt-6">
-              <button className="px-6 py-2 bg-white text-[#0F6B75] rounded-md font-semibold">
-                Get Started
-              </button>
+             <button
+  className="px-6 py-2 bg-[#0FA4AFAF] text-white rounded-md font-semibold 
+             hover:bg-[#0F6B75] hover:shadow-md transition-all duration-200"
+>
+  Get Started
+</button>
 
-              <button
-        className="px-6 py-2 bg-gray-200 text-black rounded-md font-semibold"
-        onClick={() => setPage("login")} // ye SigninPage kholega
-      >
-        Sign In
-      </button>
+        <button
+  className="px-6 py-2 bg-white text-black rounded-md font-semibold 
+             hover:bg-gray-300 hover:shadow-md transition-all duration-200"
+  onClick={() => navigate("/signin")}
+>
+  Sign In
+</button>
             </div>
           </div>
         </div>
@@ -120,9 +126,12 @@ export default function HomePage() {
         
 
           {/* Only 1 button */}
-          <button className="mt-4 w-30 bg-[#106C79] text-[#FFFFFF] py-2 rounded-xl font-semibold">
-            Get Started
-          </button>
+         <button
+  className="mt-4 w-30 bg-[#106C79] text-white py-2 rounded-xl font-semibold 
+             hover:bg-[#0F5F6A] hover:shadow-md transition-all duration-200"
+>
+  Get Started
+</button>
         </div>
 
         {/* KEY FEATURES TITLE + DESCRIPTION */}
@@ -147,7 +156,7 @@ export default function HomePage() {
       </div>
 
       {/* FOOTER */}
-     <footer className="bg-[#0F6B75] text-white text-center py-4 mt-auto">
+     <footer className="bg-[#0F6B75] text-white text-center py-0 mt-auto">
         <div className="lg:flex lg:justify-between lg:mr-10 lg:ml-10 lg:mt-8">
              <div className="flex justify-center gap-10 text-sm font-medium   lg:gap-10 t lg:flex lg:justify-start">
           <a href="#">Privacy Policy</a>
@@ -161,7 +170,7 @@ export default function HomePage() {
         </div>
         </div>
      
-        <p className="text-white text-sm mt-3">2025 Examlytic. All rights reserved</p>
+        <p className="text-white text-sm mt-0">2025 Examlytic. All rights reserved</p>
       </footer>
     </div>
     </>

@@ -1,21 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
+import MainScreen from "./Pages/mainScreen.jsx";
 import SigninPage from "./Pages/SigninPage.jsx";
 import SignupPage from "./Pages/SignupPage.jsx";
-import MainScreen from "./Pages/mainScreen.jsx";
 
 export default function App() {
-  const [page, setPage] = useState("main"); // default screen
-
   return (
-    <>
-      
-      {page === "main" && <MainScreen setPage={setPage} />}
-     {page === "login" && <SigninPage setPage={setPage} />}
-      {page === "signup" && <SignupPage setPage={setPage} />}
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainScreen />} />
+        <Route path="/signin" element={<SigninPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+      </Routes>
+    </Router>
   );
 }
+
 
 
 
