@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
+  
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
   return (
