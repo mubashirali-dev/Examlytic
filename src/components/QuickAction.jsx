@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CreateClass from "./CreateClass";
 
-const QuickAction = ({ onCreateClass }) => { 
+const QuickAction = ({ onCreateClass }) => {
   const [isCreateClassOpen, setIsCreateClassOpen] = useState(false);
 
   const quickActions = [
@@ -46,7 +46,10 @@ const QuickAction = ({ onCreateClass }) => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {quickActions.map((e, index) => (
-          <div key={index} className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-200 flex justify-between items-center relative hover:shadow-md transition-shadow h-full">
+          <div
+            key={index}
+            className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-200 flex justify-between items-center relative hover:shadow-md transition-shadow h-full"
+          >
             {e.notification && (
               <div className="absolute top-4 right-4 w-4 h-4 bg-red-600 rounded-full border-2 border-white z-10"></div>
             )}
@@ -55,7 +58,9 @@ const QuickAction = ({ onCreateClass }) => {
                 <h3 className="text-lg font-bold text-gray-900 leading-tight mb-1">
                   {e.title}
                 </h3>
-                <p className="text-sm text-gray-500 leading-snug">{e.description}</p>
+                <p className="text-sm text-gray-500 leading-snug">
+                  {e.description}
+                </p>
               </div>
               <button
                 onClick={e.onClick}
@@ -66,7 +71,11 @@ const QuickAction = ({ onCreateClass }) => {
             </div>
 
             <div className="shrink-0 ml-4">
-              <img src={e.image} alt={e.title} className="w-20 h-20 object-contain" />
+              <img
+                src={e.image}
+                alt={e.title}
+                className="w-20 h-20 object-contain"
+              />
             </div>
           </div>
         ))}
