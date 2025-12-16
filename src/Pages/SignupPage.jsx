@@ -54,15 +54,21 @@ export default function SignupPage() {
     if (validateForm()) {
       // Mock Backend: Save user to localStorage
       const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      
+
       // Check if email already exists
-      if (existingUsers.some(u => u.email === formData.email)) {
-        setErrors(prev => ({ ...prev, email: "Email is already registered" }));
+      if (existingUsers.some((u) => u.email === formData.email)) {
+        setErrors((prev) => ({
+          ...prev,
+          email: "Email is already registered",
+        }));
         return;
       }
 
       const newUser = { ...formData, id: Date.now() };
-      localStorage.setItem("users", JSON.stringify([...existingUsers, newUser]));
+      localStorage.setItem(
+        "users",
+        JSON.stringify([...existingUsers, newUser])
+      );
 
       console.log("Signup successful", newUser);
       alert("Account created successfully! Please log in.");

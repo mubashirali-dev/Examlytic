@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import StudentClassExam from './StudentClassExam';
-import StudentClassMaterial from './StudentClassMaterial';
+import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import StudentClassExam from "./StudentClassExam";
+import StudentClassMaterial from "./StudentClassMaterial";
 
 const StudentClass = ({ classData, onBack }) => {
-  const [activeTab, setActiveTab] = useState('Exams');
-  const tabs = ['Exams', 'Material'];
+  const [activeTab, setActiveTab] = useState("Exams");
+  const tabs = ["Exams", "Material"];
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-4 md:p-10 md:pt-6 relative border border-gray-200 mb-8 min-h-[80vh]">
@@ -55,8 +55,8 @@ const StudentClass = ({ classData, onBack }) => {
 
       {/* Content Area */}
       <div className="mt-6">
-        {activeTab === 'Exams' && <StudentClassExam />}
-        {activeTab === 'Material' && <StudentClassMaterial />}
+        {activeTab === "Exams" && <StudentClassExam />}
+        {activeTab === "Material" && <StudentClassMaterial />}
       </div>
     </div>
   );

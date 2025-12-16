@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { 
-  Pencil 
-} from "lucide-react";
+import { Pencil } from "lucide-react";
 import TeacherClassNavbar from "./TeacherClassNavbar";
 import TeacherClassOverview from "./TeacherClassOverview";
 import TeacherClassStudents from "./TeacherClassStudents";
 import TeacherClassExam from "./TeacherClassExam";
 import EditClass from "./EditClass";
 
-const TeacherClass = ({ classData, onUpdate, onDelete }) => {
+const TeacherClass = ({ classData, onUpdate }) => {
   const [activeTab, setActiveTab] = useState("Overview");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -21,7 +19,7 @@ const TeacherClass = ({ classData, onUpdate, onDelete }) => {
             <h1 className="text-2xl font-bold text-[#0F6B75]">
               Class: {classData?.title}
             </h1>
-            <button 
+            <button
               onClick={() => setIsEditModalOpen(true)}
               className="text-gray-400 hover:text-[#0F6B75] transition-colors p-1 rounded-full hover:bg-teal-50"
             >
@@ -39,19 +37,20 @@ const TeacherClass = ({ classData, onUpdate, onDelete }) => {
 
       {/* Content Area */}
       <div className="mt-6">
-        {activeTab === "Overview" && <TeacherClassOverview classData={classData} />}
+        {activeTab === "Overview" && (
+          <TeacherClassOverview classData={classData} />
+        )}
         {activeTab === "Students" && <TeacherClassStudents />}
         {activeTab === "Exams" && <TeacherClassExam />}
         {activeTab === "Material" && <div>Material Content Placeholder</div>}
       </div>
 
       {/* Edit Class Modal */}
-      <EditClass 
+      <EditClass
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         classData={classData}
         onUpdate={onUpdate}
-
       />
     </div>
   );

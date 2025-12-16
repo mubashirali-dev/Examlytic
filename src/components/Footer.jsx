@@ -17,21 +17,33 @@ export default function Footer() {
         </div>
 
         <div className="flex justify-center gap-4 md:gap-10 mt-4 md:mt-0">
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img
               src="/twitter 1.png"
               alt="Twitter"
               className="w-8 h-8 md:w-12 md:h-12 cursor-pointer hover:opacity-80 transition-opacity"
             />
           </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img
               src="/instagram 1.png"
               alt="Instagram"
               className="w-8 h-8 md:w-12 md:h-12 cursor-pointer hover:opacity-80 transition-opacity"
             />
           </a>
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img
               src="/facebook 1.png"
               alt="Facebook"

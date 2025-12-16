@@ -49,7 +49,12 @@ const EditClass = ({ isOpen, onClose, onUpdate, classData }) => {
 
     // Validation passed
     if (onUpdate) {
-      onUpdate({ ...classData, title: formData.name, section: formData.section, description: formData.description });
+      onUpdate({
+        ...classData,
+        title: formData.name,
+        section: formData.section,
+        description: formData.description,
+      });
     }
     onClose();
   };

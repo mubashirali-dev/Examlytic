@@ -13,9 +13,7 @@ const TeacherClassOverview = ({ classData }) => {
             <h3 className="text-sm font-semibold text-[#0F6B75] mb-2">
               Description
             </h3>
-            <p className="text-gray-600 text-sm">
-              {classData?.description}
-            </p>
+            <p className="text-gray-600 text-sm">{classData?.description}</p>
           </div>
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-[#0F6B75] mb-2">

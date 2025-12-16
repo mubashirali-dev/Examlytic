@@ -13,12 +13,12 @@ const JoinClass = ({ isOpen, onClose, onJoin }) => {
       setError("Class code is required");
       return;
     }
-    
+
     // In a real app, validation of code would happen here
     if (onJoin) {
       onJoin(classCode);
     }
-    
+
     // Reset and close
     setClassCode("");
     setError("");

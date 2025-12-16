@@ -29,7 +29,7 @@ const StudentHome = () => {
   const handleJoinClass = (classCode) => {
     // Mock logic to add a class based on code
     console.log("Joining class with code:", classCode);
-    
+
     // Use this to fetch class details from backend
     const newClass = {
       id: Date.now(),
@@ -37,7 +37,7 @@ const StudentHome = () => {
       section: "Joined Class",
       image: "/class.png",
     };
-    
+
     setClasses((prev) => [...prev, newClass]);
     alert(`Successfully joined class: ${classCode}`);
   };
@@ -54,15 +54,15 @@ const StudentHome = () => {
         />
         <main className="flex-1 p-4 md:p-10 md:px-20 ml-0 md:ml-20 transition-all duration-300">
           {selectedClass ? (
-            <StudentClass 
-              classData={selectedClass} 
+            <StudentClass
+              classData={selectedClass}
               onBack={() => setSelectedClass(null)}
             />
           ) : (
             <>
-              <StudentMyClass 
-                classes={classes} 
-                onViewClass={(cls) => setSelectedClass(cls)} 
+              <StudentMyClass
+                classes={classes}
+                onViewClass={(cls) => setSelectedClass(cls)}
                 onJoinClass={handleJoinClass}
               />
               <StudentQuickAction onJoinClass={handleJoinClass} />

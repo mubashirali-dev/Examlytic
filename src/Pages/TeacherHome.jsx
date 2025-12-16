@@ -96,8 +96,8 @@ const TeacherHome = () => {
         />
         <main className="flex-1 p-4 md:p-10 md:px-20 ml-0 md:ml-20 transition-all duration-300">
           {selectedClass ? (
-            <TeacherClass 
-              classData={selectedClass} 
+            <TeacherClass
+              classData={selectedClass}
               onUpdate={handleUpdateClass}
             />
           ) : (

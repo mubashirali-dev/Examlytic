@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import ClassCard from "./ClassCard";
-import JoinClass from "./JoinClass"; // Reusing the modal
+import JoinClass from "./JoinClass";
 import { Plus } from "lucide-react";
 
 const StudentMyClass = ({ onViewClass, classes, onJoinClass }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isJoinClassOpen, setIsJoinClassOpen] = useState(false);
-  
+
   const dropdownRef = useRef(null);
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
@@ -57,17 +57,18 @@ const StudentMyClass = ({ onViewClass, classes, onJoinClass }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
           {classes.map((cls) => (
-            <ClassCard 
-              key={cls.id} 
-              {...cls} 
+            <ClassCard
+              key={cls.id}
+              {...cls}
               onView={() => onViewClass(cls)}
               // No onDelete prop for students
             />
           ))}
           {classes.length === 0 && (
-             <div className="col-span-full text-center text-gray-500 py-10">
-               You haven't joined any classes yet. Click "Join Class" to get started.
-             </div>
+            <div className="col-span-full text-center text-gray-500 py-10">
+              You haven't joined any classes yet. Click "Join Class" to get
+              started.
+            </div>
           )}
         </div>
       </div>

@@ -50,19 +50,19 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
               </div>
 
               <div className="flex gap-3 text-gray-500">
-                <button 
-                  onClick={() => onView(exam)} 
+                <button
+                  onClick={() => onView(exam)}
                   className="hover:text-[#0F6B75] transition-colors"
                 >
                   <Eye size={18} />
                 </button>
-                <button 
+                <button
                   onClick={() => onEdit(exam)}
                   className="hover:text-[#0F6B75] transition-colors"
                 >
                   <Edit2 size={18} />
                 </button>
-                <button 
+                <button
                   onClick={() => onDelete(exam)}
                   className="hover:text-red-600 transition-colors"
                 >
@@ -111,19 +111,19 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
                 </td>
                 <td className="px-6 py-4 text-center">
                   <div className="flex justify-center items-center gap-3 text-gray-500">
-                    <button 
+                    <button
                       onClick={() => onView(exam)}
                       className="hover:text-[#0F6B75] transition-colors"
                     >
                       <Eye size={18} />
                     </button>
-                    <button 
+                    <button
                       onClick={() => onEdit(exam)}
                       className="hover:text-[#0F6B75] transition-colors"
                     >
                       <Edit2 size={18} />
                     </button>
-                    <button 
+                    <button
                       onClick={() => onDelete(exam)}
                       className="hover:text-red-600 transition-colors"
                     >

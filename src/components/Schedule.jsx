@@ -13,14 +13,18 @@ const Schedule = ({ formData, updateFormData, errors }) => {
               type="date"
               value={formData.date}
               onChange={(e) => updateFormData("date", e.target.value)}
-              className={`w-full p-2 pl-10 border ${errors?.date ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
+              className={`w-full p-2 pl-10 border ${
+                errors?.date ? "border-red-500" : "border-gray-300"
+              } rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
             />
             <Calendar
               size={18}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             />
           </div>
-          {errors?.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
+          {errors?.date && (
+            <p className="text-red-500 text-xs mt-1">{errors.date}</p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -33,14 +37,18 @@ const Schedule = ({ formData, updateFormData, errors }) => {
                 type="time"
                 value={formData.startTime}
                 onChange={(e) => updateFormData("startTime", e.target.value)}
-                className={`w-full p-2 pl-10 border ${errors?.startTime ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
+                className={`w-full p-2 pl-10 border ${
+                  errors?.startTime ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
               />
               <Clock
                 size={18}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               />
             </div>
-             {errors?.startTime && <p className="text-red-500 text-xs mt-1">{errors.startTime}</p>}
+            {errors?.startTime && (
+              <p className="text-red-500 text-xs mt-1">{errors.startTime}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -51,14 +59,18 @@ const Schedule = ({ formData, updateFormData, errors }) => {
                 type="time"
                 value={formData.endTime}
                 onChange={(e) => updateFormData("endTime", e.target.value)}
-                className={`w-full p-2 pl-10 border ${errors?.endTime ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
+                className={`w-full p-2 pl-10 border ${
+                  errors?.endTime ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
               />
               <Clock
                 size={18}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               />
             </div>
-             {errors?.endTime && <p className="text-red-500 text-xs mt-1">{errors.endTime}</p>}
+            {errors?.endTime && (
+              <p className="text-red-500 text-xs mt-1">{errors.endTime}</p>
+            )}
           </div>
         </div>
       </div>

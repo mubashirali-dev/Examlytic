@@ -54,18 +54,18 @@ export default function LoginPage() {
     if (validateForm()) {
       // Mock Data
       const defaultUsers = [
-        { 
-          email: "teacher@test.com", 
-          password: "password123", 
-          role: "Teacher", 
-          fullName: "Test Teacher"
+        {
+          email: "teacher@test.com",
+          password: "password123",
+          role: "Teacher",
+          fullName: "Test Teacher",
         },
-        { 
-          email: "student@test.com", 
-          password: "password123", 
-          role: "Student", 
-          fullName: "Test Student"
-        }
+        {
+          email: "student@test.com",
+          password: "password123",
+          role: "Student",
+          fullName: "Test Student",
+        },
       ];
 
       // Combine with localStorage users
@@ -79,7 +79,7 @@ export default function LoginPage() {
 
       if (user) {
         console.log("Login successful", user);
-        
+
         if (rememberMe) {
           localStorage.setItem("rememberedEmail", formData.email);
         } else {
@@ -93,7 +93,7 @@ export default function LoginPage() {
           navigate("/student-home", { replace: true });
         }
       } else {
-        setErrors(prev => ({ ...prev, email: "Invalid email or password" }));
+        setErrors((prev) => ({ ...prev, email: "Invalid email or password" }));
       }
     }
   };
@@ -151,11 +151,12 @@ export default function LoginPage() {
 
                 <div className="flex items-center justify-between text-sm text-gray-600 mt-1">
                   <label className="flex items-center gap-2">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                    /> Remember Me
+                    />{" "}
+                    Remember Me
                   </label>
                   <a href="#" className="text-[#0F6B75] font-semibold">
                     Forgot your password?

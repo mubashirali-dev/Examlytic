@@ -1,21 +1,39 @@
-import React from 'react';
-import { FileText, Video, Link as LinkIcon, Download } from 'lucide-react';
+import { FileText, Video, Link as LinkIcon, Download } from "lucide-react";
 
 const StudentClassMaterial = () => {
   // Mock Data for materials
   const materials = [
-    { id: 1, title: "Lecture 1: Introduction", type: "pdf", date: "Oct 10, 2025" },
-    { id: 2, title: "Reference Video: Chapter 1", type: "video", date: "Oct 12, 2025" },
+    {
+      id: 1,
+      title: "Lecture 1: Introduction",
+      type: "pdf",
+      date: "Oct 10, 2025",
+    },
+    {
+      id: 2,
+      title: "Reference Video: Chapter 1",
+      type: "video",
+      date: "Oct 12, 2025",
+    },
     { id: 3, title: "Course Syllabus", type: "doc", date: "Oct 01, 2025" },
-    { id: 4, title: "Extra Reading Resources", type: "link", date: "Oct 15, 2025" },
+    {
+      id: 4,
+      title: "Extra Reading Resources",
+      type: "link",
+      date: "Oct 15, 2025",
+    },
   ];
 
   const getIcon = (type) => {
     switch (type) {
-      case 'pdf': return <FileText className="text-red-500" size={24} />;
-      case 'video': return <Video className="text-blue-500" size={24} />;
-      case 'link': return <LinkIcon className="text-green-500" size={24} />;
-      default: return <FileText className="text-gray-500" size={24} />;
+      case "pdf":
+        return <FileText className="text-red-500" size={24} />;
+      case "video":
+        return <Video className="text-blue-500" size={24} />;
+      case "link":
+        return <LinkIcon className="text-green-500" size={24} />;
+      default:
+        return <FileText className="text-gray-500" size={24} />;
     }
   };
 
@@ -24,7 +42,10 @@ const StudentClassMaterial = () => {
       <h2 className="text-xl font-bold text-[#0F6B75] mb-6">Class Materials</h2>
       <div className="grid grid-cols-1 gap-4">
         {materials.map((item) => (
-          <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-200 flex items-center justify-between hover:shadow-sm transition-shadow">
+          <div
+            key={item.id}
+            className="bg-white p-4 rounded-xl border border-gray-200 flex items-center justify-between hover:shadow-sm transition-shadow"
+          >
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gray-50 rounded-lg">
                 {getIcon(item.type)}

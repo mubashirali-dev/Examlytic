@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, ChevronLeft, ChevronRight, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Clock, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
 
 const TakeExam = ({ exam, onFinish }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -27,7 +27,7 @@ const TakeExam = ({ exam, onFinish }) => {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+    return `${minutes}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleOptionSelect = (questionId, optionIndex) => {
@@ -56,13 +56,24 @@ const TakeExam = ({ exam, onFinish }) => {
           <CheckCircle size={40} />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Exam Submitted!</h2>
-          <p className="text-gray-500">You have successfully completed the exam.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Exam Submitted!
+          </h2>
+          <p className="text-gray-500">
+            You have successfully completed the exam.
+          </p>
         </div>
 
         <div className="bg-gray-50 p-6 rounded-xl inline-block w-full">
-          <p className="text-sm text-gray-500 uppercase font-bold mb-1">Your Score</p>
-          <p className="text-4xl font-bold text-[#0F6B75]">{score} <span className="text-lg text-gray-400 font-medium">/ {exam.totalMarks}</span></p>
+          <p className="text-sm text-gray-500 uppercase font-bold mb-1">
+            Your Score
+          </p>
+          <p className="text-4xl font-bold text-[#0F6B75]">
+            {score}{" "}
+            <span className="text-lg text-gray-400 font-medium">
+              / {exam.totalMarks}
+            </span>
+          </p>
         </div>
 
         <button
@@ -83,7 +94,13 @@ const TakeExam = ({ exam, onFinish }) => {
           <h2 className="font-bold text-gray-900 text-lg">{exam.title}</h2>
           <p className="text-sm text-gray-500">{exam.subject}</p>
         </div>
-        <div className={`flex items-center gap-2 font-mono text-xl font-bold px-4 py-2 rounded-lg ${timeLeft < 300 ? 'bg-red-50 text-red-600' : 'bg-teal-50 text-[#0F6B75]'}`}>
+        <div
+          className={`flex items-center gap-2 font-mono text-xl font-bold px-4 py-2 rounded-lg ${
+            timeLeft < 300
+              ? "bg-red-50 text-red-600"
+              : "bg-teal-50 text-[#0F6B75]"
+          }`}
+        >
           <Clock size={20} />
           {formatTime(timeLeft)}
         </div>
@@ -94,8 +111,13 @@ const TakeExam = ({ exam, onFinish }) => {
         <div className="flex-1 space-y-6">
           <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm min-h-[400px] flex flex-col">
             <div className="flex justify-between items-start mb-6">
-              <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-bold">Question {currentQuestionIndex + 1} of {exam.questionsList.length}</span>
-              <span className="text-sm font-medium text-gray-500">{currentQuestion.marks} Marks</span>
+              <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-bold">
+                Question {currentQuestionIndex + 1} of{" "}
+                {exam.questionsList.length}
+              </span>
+              <span className="text-sm font-medium text-gray-500">
+                {currentQuestion.marks} Marks
+              </span>
             </div>
 
             <h3 className="text-xl font-medium text-gray-900 mb-8 leading-relaxed">
@@ -113,12 +135,16 @@ const TakeExam = ({ exam, onFinish }) => {
                       : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                   }`}
                 >
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                    answers[currentQuestion.id] === idx
-                      ? "border-[#0F6B75] bg-[#0F6B75]"
-                      : "border-gray-300 group-hover:border-gray-400"
-                  }`}>
-                    {answers[currentQuestion.id] === idx && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                      answers[currentQuestion.id] === idx
+                        ? "border-[#0F6B75] bg-[#0F6B75]"
+                        : "border-gray-300 group-hover:border-gray-400"
+                    }`}
+                  >
+                    {answers[currentQuestion.id] === idx && (
+                      <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
+                    )}
                   </div>
                   <span className="font-medium">{opt}</span>
                 </button>
@@ -129,7 +155,9 @@ const TakeExam = ({ exam, onFinish }) => {
           {/* Footer Navigation */}
           <div className="flex justify-between items-center">
             <button
-              onClick={() => setCurrentQuestionIndex(curr => Math.max(0, curr - 1))}
+              onClick={() =>
+                setCurrentQuestionIndex((curr) => Math.max(0, curr - 1))
+              }
               disabled={currentQuestionIndex === 0}
               className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-gray-600 hover:bg-white disabled:opacity-50 transition-colors"
             >
@@ -137,7 +165,7 @@ const TakeExam = ({ exam, onFinish }) => {
               Previous
             </button>
 
-            {!currentQuestionIndex === exam.questionsList.length - 1 ? (
+            {currentQuestionIndex === exam.questionsList.length - 1 ? (
               <button
                 onClick={handleSubmit}
                 className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-white bg-[#0F6B75] hover:bg-[#0c565e] shadow-lg shadow-teal-700/20 transition-all hover:scale-105"
@@ -147,7 +175,11 @@ const TakeExam = ({ exam, onFinish }) => {
               </button>
             ) : (
               <button
-                onClick={() => setCurrentQuestionIndex(curr => Math.min(exam.questionsList.length - 1, curr + 1))}
+                onClick={() =>
+                  setCurrentQuestionIndex((curr) =>
+                    Math.min(exam.questionsList.length - 1, curr + 1)
+                  )
+                }
                 className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white bg-[#0F6B75] hover:bg-[#0c565e] shadow-lg shadow-teal-700/20 transition-all hover:scale-105"
               >
                 Next Question
@@ -169,8 +201,8 @@ const TakeExam = ({ exam, onFinish }) => {
                   currentQuestionIndex === idx
                     ? "ring-2 ring-[#0F6B75] ring-offset-2 bg-[#0F6B75] text-white"
                     : answers[q.id] !== undefined
-                      ? "bg-teal-100 text-teal-800"
-                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                    ? "bg-teal-100 text-teal-800"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                 }`}
               >
                 {idx + 1}

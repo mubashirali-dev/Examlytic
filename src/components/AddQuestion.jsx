@@ -16,7 +16,9 @@ const AddQuestion = ({
     <div className="space-y-8">
       {/* Add New Question Section */}
       <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Add New Question</h3>
+        <h3 className="text-lg font-bold text-gray-800 mb-4">
+          Add New Question
+        </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
@@ -60,9 +62,13 @@ const AddQuestion = ({
               setNewQuestion({ ...newQuestion, text: e.target.value })
             }
             placeholder="Enter your question here..."
-            className={`w-full p-2 border ${questionErrors?.text ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none h-24`}
+            className={`w-full p-2 border ${
+              questionErrors?.text ? "border-red-500" : "border-gray-300"
+            } rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none h-24`}
           />
-          {questionErrors?.text && <p className="text-red-500 text-xs mt-1">{questionErrors.text}</p>}
+          {questionErrors?.text && (
+            <p className="text-red-500 text-xs mt-1">{questionErrors.text}</p>
+          )}
         </div>
 
         {newQuestion.type === "mcq" && (
@@ -86,11 +92,19 @@ const AddQuestion = ({
                   value={opt}
                   onChange={(e) => onOptionChange(idx, e.target.value)}
                   placeholder={`Option ${idx + 1}`}
-                  className={`flex-1 p-2 border ${questionErrors?.options && !opt.trim() ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
+                  className={`flex-1 p-2 border ${
+                    questionErrors?.options && !opt.trim()
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
                 />
               </div>
             ))}
-            {questionErrors?.options && <p className="text-red-500 text-xs mt-1">{questionErrors.options}</p>}
+            {questionErrors?.options && (
+              <p className="text-red-500 text-xs mt-1">
+                {questionErrors.options}
+              </p>
+            )}
           </div>
         )}
 
@@ -126,15 +140,19 @@ const AddQuestion = ({
             Total Marks: {totalMarks}
           </span>
         </div>
-        
+
         {errors?.questions && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-                {errors.questions}
-            </div>
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+            {errors.questions}
+          </div>
         )}
 
         {questions.length === 0 ? (
-          <div className={`text-center py-10 text-gray-500 bg-white rounded-xl border border-dashed ${errors?.questions ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}>
+          <div
+            className={`text-center py-10 text-gray-500 bg-white rounded-xl border border-dashed ${
+              errors?.questions ? "border-red-300 bg-red-50" : "border-gray-300"
+            }`}
+          >
             No questions added yet.
           </div>
         ) : (
