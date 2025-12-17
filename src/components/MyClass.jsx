@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 const MyClass = ({ onViewClass, classes, onDeleteClass, onCreateClass }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCreateClassOpen, setIsCreateClassOpen] = useState(false);
-
+  
   // Delete Modal State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [classToDelete, setClassToDelete] = useState(null);
@@ -82,11 +82,11 @@ const MyClass = ({ onViewClass, classes, onDeleteClass, onCreateClass }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
           {classes.map((cls) => (
-            <ClassCard
-              key={cls.id}
-              {...cls}
+            <ClassCard 
+              key={cls.id} 
+              {...cls} 
               onView={() => onViewClass(cls)}
-              onDelete={() => handleDeleteClick(cls)}
+              onDelete={() => handleDeleteClick(cls)} 
             />
           ))}
         </div>

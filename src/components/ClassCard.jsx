@@ -11,7 +11,7 @@ const ClassCard = ({ title, section, image, onView, onDelete }) => {
         <p className="text-sm text-[#0F6B75] font-medium mb-6">{section}</p>
 
         <div className="mt-auto">
-          <button
+          <button 
             onClick={onView}
             className="bg-[#0F6B75] text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-[#0c565e] transition-colors"
           >
@@ -20,19 +20,17 @@ const ClassCard = ({ title, section, image, onView, onDelete }) => {
         </div>
       </div>
 
-      {onDelete && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent triggering parent clicks if any
-            onDelete();
-          }}
-          className="rounded-full absolute -bottom-3 right-4 text-white hover:opacity-90 transition-opacity shadow-md"
-        >
-          <div className="bg-[#0F6B75] p-2 rounded-full">
-            <Trash2 size={18} />
-          </div>
-        </button>
-      )}
+      <button 
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent triggering parent clicks if any
+          onDelete();
+        }}
+        className="rounded-full absolute -bottom-3 right-4 text-white hover:opacity-90 transition-opacity shadow-md"
+      >
+        <div className="bg-[#0F6B75] p-2 rounded-full">
+          <Trash2 size={18} />
+        </div>
+      </button>
     </div>
   );
 };
