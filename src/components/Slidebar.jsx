@@ -4,17 +4,15 @@ import {
   ClipboardList,
   CheckSquare,
   BarChart2,
-  Bell,
-  Moon,
-  Settings,
+  LogOut,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const TeacherSlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick }) => {
+const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("Home");
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const sidebarRef = useRef(null);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -36,17 +34,33 @@ const TeacherSlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick }) => {
     };
   }, [closeMobileSidebar]);
 
-  const menuItems = [
-    { icon: Home, label: "Home" },
-    { icon: ClipboardList, label: "Exams" },
-    { icon: CheckSquare, label: "Results" },
-    { icon: BarChart2, label: "Reports" },
-  ];
+  let menuItems = [];
+
+  if (role === "Teacher") {
+    menuItems = [
+      { icon: Home, label: "Home" },
+      { icon: ClipboardList, label: "Exams" },
+      { icon: CheckSquare, label: "Results" },
+      { icon: BarChart2, label: "Reports" },
+    ];
+  } else if (role === "Student") {
+    menuItems = [
+      { icon: Home, label: "Home" },
+      { icon: CheckSquare, label: "My Results" },
+    ];
+  } else {
+    // Default or fallback
+    menuItems = [{ icon: Home, label: "Home" }];
+  }
+
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    navigate("/login", { replace: true });
+  };
 
   const bottomItems = [
-    { icon: Bell, label: "Notification" },
-    // Theme is handled separately
-    { icon: Settings, label: "Settings" },
+    { icon: LogOut, label: "Sign Out", action: handleSignOut },
   ];
 
   return (
@@ -113,12 +127,14 @@ const TeacherSlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick }) => {
         </div>
 
         <div className="flex flex-col gap-2 mb-4">
-          {/* Notification & Settings */}
           {bottomItems.map((item, index) => (
             <div
               key={index}
               className="flex items-center px-6 cursor-pointer hover:bg-white/10 py-3 transition-colors relative group"
-              onClick={() => setIsOpen(true)}
+              onClick={() => {
+                setIsOpen(true);
+                if (item.action) item.action();
+              }}
             >
               <item.icon size={24} className="min-w-[24px]" />
               <span
@@ -135,43 +151,10 @@ const TeacherSlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick }) => {
               )}
             </div>
           ))}
-
-          {/* Theme Toggle */}
-          <div
-            className="flex items-center px-6 cursor-pointer hover:bg-white/10 py-3 transition-colors relative group"
-            onClick={() => setIsOpen(true)}
-          >
-            <Moon size={24} className="min-w-[24px]" />
-            <div
-              className={`ml-4 flex items-center justify-between w-full transition-opacity duration-300 ${
-                isOpen || isMobileOpen ? "opacity-100" : "opacity-0 hidden"
-              }`}
-            >
-              <span className="font-medium whitespace-nowrap">Theme</span>
-              <div
-                className="w-10 h-5 bg-white rounded-full relative ml-2 cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsDarkMode(!isDarkMode);
-                }}
-              >
-                <div
-                  className={`absolute top-1 left-1 w-3 h-3 bg-[#0F6B75] rounded-full transition-transform duration-300 ${
-                    isDarkMode ? "translate-x-5" : "translate-x-0"
-                  }`}
-                ></div>
-              </div>
-            </div>
-            {!isOpen && !isMobileOpen && (
-              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 hidden md:block">
-                Theme
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default TeacherSlideBar;
+export default SlideBar;

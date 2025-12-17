@@ -1,41 +1,22 @@
 import { useState } from "react";
-import CreateClass from "./CreateClass";
+import JoinClass from "./JoinClass";
 
-const QuickAction = ({ onCreateClass }) => {
-  const [isCreateClassOpen, setIsCreateClassOpen] = useState(false);
+const StudentQuickAction = ({ onJoinClass }) => {
+  const [isJoinClassOpen, setIsJoinClassOpen] = useState(false);
 
   const quickActions = [
     {
-      title: "Class Performance",
-      description: "Check Class Performance on the go",
-      buttonText: "Check",
-      image: "/clasperfmce.png",
+      title: "Join Class",
+      description: "Join a new class using a code",
+      buttonText: "Join",
+      image: "/createclass.png", // Reusing image
+      onClick: () => setIsJoinClassOpen(true),
     },
     {
-      title: "Create Class",
-      description: "Add or create a new class",
-      buttonText: "Add",
-      image: "/createclass.png",
-      onClick: () => setIsCreateClassOpen(true),
-    },
-    {
-      title: "Upcoming Exams",
-      description: "Check Upcoming Exams of Classes",
+      title: "My Results",
+      description: "Check your latest exam results",
       buttonText: "View",
-      image: "/upexam.png",
-    },
-    {
-      title: "Flagged Cheating Cases",
-      description: "Flagged cheating cases to review at the moment",
-      buttonText: "Review",
-      image: "/flagcheat.png",
-      notification: true,
-    },
-    {
-      title: "Manage Students",
-      description: "Add, remove, or manage student details.",
-      buttonText: "Manage",
-      image: "/managestd.png",
+      image: "/clasperfmce.png", // Reusing image
     },
   ];
 
@@ -50,9 +31,6 @@ const QuickAction = ({ onCreateClass }) => {
             key={index}
             className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-200 flex justify-between items-center relative hover:shadow-md transition-shadow h-full"
           >
-            {e.notification && (
-              <div className="absolute top-4 right-4 w-4 h-4 bg-red-600 rounded-full border-2 border-white z-10"></div>
-            )}
             <div className="flex flex-col items-start justify-between h-full gap-4 max-w-[60%]">
               <div>
                 <h3 className="text-lg font-bold text-gray-900 leading-tight mb-1">
@@ -81,13 +59,13 @@ const QuickAction = ({ onCreateClass }) => {
         ))}
       </div>
 
-      <CreateClass
-        isOpen={isCreateClassOpen}
-        onClose={() => setIsCreateClassOpen(false)}
-        onCreate={onCreateClass}
+      <JoinClass
+        isOpen={isJoinClassOpen}
+        onClose={() => setIsJoinClassOpen(false)}
+        onJoin={onJoinClass}
       />
     </div>
   );
 };
 
-export default QuickAction;
+export default StudentQuickAction;

@@ -1,16 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import ClassCard from "./ClassCard";
-import CreateClass from "./CreateClass";
-import ConfirmationModal from "./ConfirmationModal";
+import JoinClass from "./JoinClass";
 import { Plus } from "lucide-react";
 
-const MyClass = ({ onViewClass, classes, onDeleteClass, onCreateClass }) => {
+const StudentMyClass = ({ onViewClass, classes, onJoinClass }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isCreateClassOpen, setIsCreateClassOpen] = useState(false);
-
-  // Delete Modal State
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [classToDelete, setClassToDelete] = useState(null);
+  const [isJoinClassOpen, setIsJoinClassOpen] = useState(false);
 
   const dropdownRef = useRef(null);
 
@@ -28,20 +23,6 @@ const MyClass = ({ onViewClass, classes, onDeleteClass, onCreateClass }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  // Delete Handlers
-  const handleDeleteClick = (classItem) => {
-    setClassToDelete(classItem);
-    setIsDeleteModalOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (classToDelete) {
-      onDeleteClass(classToDelete.id);
-      setIsDeleteModalOpen(false);
-      setClassToDelete(null);
-    }
-  };
 
   return (
     <>
@@ -61,18 +42,12 @@ const MyClass = ({ onViewClass, classes, onDeleteClass, onCreateClass }) => {
                 <div className="py-0">
                   <button
                     onClick={() => {
-                      setIsCreateClassOpen(true);
+                      setIsJoinClassOpen(true);
                       setIsDropdownOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold border-b border-white"
+                    className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold"
                   >
-                    New Class
-                  </button>
-                  <button className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold border-b border-white">
-                    New Exam
-                  </button>
-                  <button className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold">
-                    Upload Paper
+                    Join Class
                   </button>
                 </div>
               </div>
@@ -86,30 +61,25 @@ const MyClass = ({ onViewClass, classes, onDeleteClass, onCreateClass }) => {
               key={cls.id}
               {...cls}
               onView={() => onViewClass(cls)}
-              onDelete={() => handleDeleteClick(cls)}
+              // No onDelete prop for students
             />
           ))}
+          {classes.length === 0 && (
+            <div className="col-span-full text-center text-gray-500 py-10">
+              You haven't joined any classes yet. Click "Join Class" to get
+              started.
+            </div>
+          )}
         </div>
       </div>
 
-      <CreateClass
-        isOpen={isCreateClassOpen}
-        onClose={() => setIsCreateClassOpen(false)}
-        onCreate={onCreateClass}
-      />
-
-      {/* Delete Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDelete}
-        title="Delete Class"
-        message={`Are you sure you want to delete "${classToDelete?.title}"? This action cannot be undone.`}
-        confirmText="Delete"
-        isDanger={true}
+      <JoinClass
+        isOpen={isJoinClassOpen}
+        onClose={() => setIsJoinClassOpen(false)}
+        onJoin={onJoinClass}
       />
     </>
   );
 };
 
-export default MyClass;
+export default StudentMyClass;

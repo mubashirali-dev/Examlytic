@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const KeyFeatures = () => {
   const features = [
@@ -43,8 +43,8 @@ const KeyFeatures = () => {
       <div className="text-center mt-2">
         <h2 className="text-xl md:text-4xl font-bold">Key Features</h2>
         <p className="text-xs md:text-sm mt-1 max-w-md mx-auto text-gray-600 md:text-black">
-          Examlytic offers a comprehensive suite of features designed to
-          enhance the examination experience for both educator and learner.
+          Examlytic offers a comprehensive suite of features designed to enhance
+          the examination experience for both educator and learner.
         </p>
       </div>
 
@@ -88,10 +88,12 @@ const KeyFeatures = () => {
       <div className="md:hidden space-y-4 mt-6">
         {features.map((f, i) => (
           <div key={i} className="w-full flex flex-col items-center">
-            <img src={f.img} className="w-44 h-36 object-contain" alt={f.title} />
-            <h3 className="text-xl font-bold mt-2 text-[#000000]">
-              {f.title}
-            </h3>
+            <img
+              src={f.img}
+              className="w-44 h-36 object-contain"
+              alt={f.title}
+            />
+            <h3 className="text-xl font-bold mt-2 text-[#000000]">{f.title}</h3>
           </div>
         ))}
       </div>

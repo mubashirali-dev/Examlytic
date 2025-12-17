@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
+import MainNavbar from "../components/MainNavbar";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 
@@ -10,6 +10,15 @@ export default function LoginPage() {
     password: "",
   });
   const [errors, setErrors] = useState({});
+  const [rememberMe, setRememberMe] = useState(false);
+
+  React.useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setFormData((prev) => ({ ...prev, email: savedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,15 +52,55 @@ export default function LoginPage() {
   const handleLogin = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // Proceed with login logic
-      console.log("Login successful", formData);
-      navigate("/teacher-home", { replace: true });
+      // Mock Data
+      const defaultUsers = [
+        {
+          email: "teacher@test.com",
+          password: "password123",
+          role: "Teacher",
+          fullName: "Test Teacher",
+        },
+        {
+          email: "student@test.com",
+          password: "password123",
+          role: "Student",
+          fullName: "Test Student",
+        },
+      ];
+
+      // Combine with localStorage users
+      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+      const allUsers = [...defaultUsers, ...storedUsers];
+
+      // Find user
+      const user = allUsers.find(
+        (u) => u.email === formData.email && u.password === formData.password
+      );
+
+      if (user) {
+        console.log("Login successful", user);
+
+        if (rememberMe) {
+          localStorage.setItem("rememberedEmail", formData.email);
+        } else {
+          localStorage.removeItem("rememberedEmail");
+        }
+
+        // Redirect based on role
+        if (user.role === "Teacher") {
+          navigate("/teacher-home", { replace: true });
+        } else {
+          navigate("/student-home", { replace: true });
+        }
+      } else {
+        setErrors((prev) => ({ ...prev, email: "Invalid email or password" }));
+      }
     }
   };
 
   return (
     <>
-      <Navbar />
+      <MainNavbar />
       <div className="min-h-screen bg-white flex flex-col">
         {/* MAIN CARD */}
         <div className="flex justify-center py-10 px-4">
@@ -102,7 +151,12 @@ export default function LoginPage() {
 
                 <div className="flex items-center justify-between text-sm text-gray-600 mt-1">
                   <label className="flex items-center gap-2">
-                    <input type="checkbox" /> Remember Me
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                    />{" "}
+                    Remember Me
                   </label>
                   <a href="#" className="text-[#0F6B75] font-semibold">
                     Forgot your password?
