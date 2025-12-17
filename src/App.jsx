@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import MainScreen from "./Pages/MainScreen.jsx";
+import MainScreen from "./Pages/mainScreen.jsx";
 import LoginPage from "./Pages/LoginPage.jsx";
 import SignupPage from "./Pages/SignupPage.jsx";
 import TeacherHome from "./Pages/TeacherHome.jsx";
@@ -18,18 +18,3 @@ export default function App() {
     </Router>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
