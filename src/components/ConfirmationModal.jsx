@@ -1,12 +1,12 @@
-const ConfirmationModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  title,
-  message,
+const ConfirmationModal = ({ 
+  isOpen, 
+  onClose, 
+  onConfirm, 
+  title, 
+  message, 
   confirmText = "Confirm",
   cancelText = "Cancel",
-  isDanger = false,
+  isDanger = false 
 }) => {
   if (!isOpen) return null;
 
@@ -26,8 +26,8 @@ const ConfirmationModal = ({
           <button
             onClick={onConfirm}
             className={`px-4 py-2 rounded-lg text-white font-medium shadow-sm transition-colors ${
-              isDanger
-                ? "bg-red-600 hover:bg-red-700"
+              isDanger 
+                ? "bg-red-600 hover:bg-red-700" 
                 : "bg-[#0F6B75] hover:bg-[#0c565e]"
             }`}
           >

@@ -1,34 +1,64 @@
-import { Menu } from "lucide-react";
+import { useState } from "react";
+import { AlignJustify } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const Navbar = ({ toggleSidebar }) => {
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const onSignInPage = location.pathname === "/login";
+  const onSignUpPage = location.pathname === "/signup";
+
   return (
-    <div className="w-full h-16 bg-[#0F6B75] flex items-center justify-between px-4 text-white fixed top-0 z-50 shadow-md">
-      <div className="flex items-center gap-3">
-        <img
-          src="https://plus.unsplash.com/premium_vector-1727955579185-ed12a1c678de?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8cHJvZmlsZSUyMGljb258ZW58MHx8MHx8fDA%3D"
-          alt="User"
-          className="w-10 h-10 rounded-full border-2 border-white"
+    <nav className="w-full h-16 bg-[#0F6B75] py-4 px-4 flex items-center justify-between relative">
+      {/* LEFT LOGO */}
+      <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+        <img src="/logo.png" alt="Examlytic Logo" className="w-12 h-10" />
+        <h1 className="text-white text-lg font-bold">Examlytic</h1>
+      </div>
+
+      {/* DESKTOP LINKS */}
+      <div className="hidden md:flex items-center gap-8 text-white font-medium">
+        <a href="#" className="hover:text-gray-300">Features</a>
+        <a href="#" className="hover:text-gray-300">Resources</a>
+        <a href="#" className="hover:text-gray-300">Support</a>
+      </div>
+
+      {/* RIGHT SIDE */}
+      <div className="flex items-center gap-2 md:gap-2 ml-auto md:ml-0">
+        {/* LOGIN BUTTON */}
+        {!onSignInPage && (
+          <button
+            className="bg-white text-[#0F6B75] hover:bg-gray-300 font-semibold rounded-xl px-3 py-1.5 text-sm md:px-6 md:py-2 md:text-base transition-all duration-200"
+            onClick={() => navigate("/login")}
+          >Login</button>
+        )}
+
+        {/* SIGNUP BUTTON */}
+        {!onSignUpPage && (
+          <button
+            className="bg-white text-[#0F6B75] hover:bg-gray-300 font-semibold rounded-xl px-3 py-1.5 text-sm md:px-6 md:py-2 md:text-base transition-all duration-200"
+            onClick={() => navigate("/signup")}
+          >Sign Up</button>
+        )}
+
+        {/* MOBILE MENU ICON */}
+        <AlignJustify
+          className="md:hidden text-white cursor-pointer ml-1"
+          size={30}
+          onClick={() => setOpen(!open)}
         />
-        <span className="font-semibold text-lg hidden sm:block">User Name</span>
       </div>
 
-      <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
-        <img src="/logo.png" alt="Examlytic Logo" className="w-14 h-12" />
-        <span className="text-2xl font-bold tracking-wide">Examlytic</span>
-      </div>
-
-      {/* Right side - Hamburger Menu */}
-      <div className="flex items-center justify-end min-w-[40px]">
-        <button
-          onClick={toggleSidebar}
-          onMouseDown={(e) => e.stopPropagation()}
-          className="md:hidden text-white"
-        >
-          <Menu size={28} />
-        </button>
-      </div>
-    </div>
+      {/* MOBILE DROPDOWN MENU */}
+      {open && (
+        <div className="absolute top-full left-0 w-full bg-[#0F6B75] text-white flex flex-col px-6 py-4 gap-4 md:hidden shadow-lg animate-slideDown">
+          <a href="#" className="text-lg">Features</a>
+          <a href="#" className="text-lg">Resources</a>
+          <a href="#" className="text-lg">Support</a>
+        </div>
+      )}
+    </nav>
   );
-};
-
-export default Navbar;
+}
