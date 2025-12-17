@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -7,12 +7,16 @@ const HeroSection = () => {
     <div className="flex justify-center w-full px-4 py-6 md:px-6 md:py-10">
       <div className="max-w-7xl w-full rounded-xl p-6 md:p-10 text-center md:text-left md:bg-[#0F6B75] md:text-white">
         <h1 className="text-[29px] md:text-4xl font-bold leading-snug md:leading-tight">
-          AI-Powered Exams.<br />Smarter Learning.<br />Secure Future.
+          AI-Powered Exams.
+          <br />
+          Smarter Learning.
+          <br />
+          Secure Future.
         </h1>
 
         <p className="mt-3 md:mt-4 text-xs md:text-sm max-w-md mx-auto md:mx-0">
-          Examlytic is an AI-powered online examination system with smart proctoring,
-          automated grading, and personalized learning paths.
+          Examlytic is an AI-powered online examination system with smart
+          proctoring, automated grading, and personalized learning paths.
         </p>
 
         <div className="flex justify-center md:justify-start gap-4 mt-4 md:mt-6">

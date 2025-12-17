@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import Navbar from "../components/Navbar";
+import { useState } from "react";
+import MainNavbar from "../components/MainNavbar";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 
@@ -52,14 +52,33 @@ export default function SignupPage() {
   const handleSignup = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Signup successful", formData);
+      // Mock Backend: Save user to localStorage
+      const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+
+      // Check if email already exists
+      if (existingUsers.some((u) => u.email === formData.email)) {
+        setErrors((prev) => ({
+          ...prev,
+          email: "Email is already registered",
+        }));
+        return;
+      }
+
+      const newUser = { ...formData, id: Date.now() };
+      localStorage.setItem(
+        "users",
+        JSON.stringify([...existingUsers, newUser])
+      );
+
+      console.log("Signup successful", newUser);
+      alert("Account created successfully! Please log in.");
       navigate("/login", { replace: true });
     }
   };
 
   return (
     <>
-      <Navbar />
+      <MainNavbar />
       <div className="min-h-screen bg-white flex flex-col">
         {/* MAIN CARD */}
         <div className="flex justify-center py-10 px-4">
