@@ -8,6 +8,18 @@ const TakeExam = ({ exam, onFinish }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
+  const handleSubmit = () => {
+    // Calculate Mock Score
+    let calculatedScore = 0;
+    exam.questionsList.forEach((q) => {
+      if (answers[q.id] === q.correctOption) {
+        calculatedScore += q.marks;
+      }
+    });
+    setScore(calculatedScore);
+    setIsSubmitted(true);
+  };
+
   // Mock Timer
   useEffect(() => {
     if (isSubmitted) return;
@@ -33,18 +45,6 @@ const TakeExam = ({ exam, onFinish }) => {
   const handleOptionSelect = (questionId, optionIndex) => {
     if (isSubmitted) return;
     setAnswers({ ...answers, [questionId]: optionIndex });
-  };
-
-  const handleSubmit = () => {
-    // Calculate Mock Score
-    let calculatedScore = 0;
-    exam.questionsList.forEach((q) => {
-      if (answers[q.id] === q.correctOption) {
-        calculatedScore += q.marks;
-      }
-    });
-    setScore(calculatedScore);
-    setIsSubmitted(true);
   };
 
   const currentQuestion = exam.questionsList[currentQuestionIndex];
@@ -136,7 +136,7 @@ const TakeExam = ({ exam, onFinish }) => {
                   }`}
                 >
                   <div
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${
                       answers[currentQuestion.id] === idx
                         ? "border-[#0F6B75] bg-[#0F6B75]"
                         : "border-gray-300 group-hover:border-gray-400"

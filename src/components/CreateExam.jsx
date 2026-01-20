@@ -1,29 +1,25 @@
 import { useState } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Save,
-  Check,
-  CheckCircle,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, Check, CheckCircle } from "lucide-react";
 import AddQuestion from "./AddQuestion";
 import Schedule from "./Schedule";
 
 const CreateExam = ({ onBack, onSave, initialData }) => {
   // ... (state remains same)
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState(initialData || {
-    title: "",
-    subject: "",
-    duration: 60, // minutes
-    totalMarks: 0,
-    passingMarks: 0,
-    questions: [],
-    date: "",
-    startTime: "",
-    endTime: "",
-    randomize: false,
-  });
+  const [formData, setFormData] = useState(
+    initialData || {
+      title: "",
+      subject: "",
+      duration: 60, // minutes
+      totalMarks: 0,
+      passingMarks: 0,
+      questions: [],
+      date: "",
+      startTime: "",
+      endTime: "",
+      randomize: false,
+    }
+  );
 
   // Step 2: Question State
   const [newQuestion, setNewQuestion] = useState({
@@ -52,8 +48,10 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
     if (step === 1) {
       if (!formData.title.trim()) newErrors.title = "Exam title is required";
       if (!formData.subject.trim()) newErrors.subject = "Subject is required";
-      if (formData.duration <= 10) newErrors.duration = "Duration must be more than 10 minutes";
-      if (formData.passingMarks < 0) newErrors.passingMarks = "Passing marks cannot be negative";
+      if (formData.duration <= 10)
+        newErrors.duration = "Duration must be more than 10 minutes";
+      if (formData.passingMarks < 0)
+        newErrors.passingMarks = "Passing marks cannot be negative";
     }
 
     if (step === 2) {
@@ -66,8 +64,12 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
       if (!formData.date) newErrors.date = "Date is required";
       if (!formData.startTime) newErrors.startTime = "Start time is required";
       if (!formData.endTime) newErrors.endTime = "End time is required";
-      
-      if (formData.startTime && formData.endTime && formData.startTime >= formData.endTime) {
+
+      if (
+        formData.startTime &&
+        formData.endTime &&
+        formData.startTime >= formData.endTime
+      ) {
         newErrors.endTime = "End time must be after start time";
       }
     }
@@ -111,24 +113,24 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
       isValid = false;
     }
     if (parseInt(newQuestion.marks) <= 0) {
-      newQErrors.marks = "Marks must be positive"; 
+      newQErrors.marks = "Marks must be positive";
       isValid = false;
     }
-    
+
     if (newQuestion.type === "mcq") {
-       // Validate options
-       // We can use an array of errors or simple check
-       if (newQuestion.options.some(opt => !opt.trim())) {
-           newQErrors.options = "All options must be filled";
-           isValid = false;
-       }
+      // Validate options
+      // We can use an array of errors or simple check
+      if (newQuestion.options.some((opt) => !opt.trim())) {
+        newQErrors.options = "All options must be filled";
+        isValid = false;
+      }
     }
 
     if (!isValid) {
       setQuestionErrors(newQErrors);
       return;
     }
-    
+
     // Success path
     setFormData({
       ...formData,
@@ -146,9 +148,9 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
     });
     setQuestionErrors({});
 
-     // Also clear global 'questions' error if it exists
+    // Also clear global 'questions' error if it exists
     if (errors.questions) {
-        setErrors({...errors, questions: null});
+      setErrors({ ...errors, questions: null });
     }
   };
 
@@ -165,7 +167,7 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
     newOptions[index] = value;
     setNewQuestion({ ...newQuestion, options: newOptions });
     if (questionErrors.options) {
-         setQuestionErrors({...questionErrors, options: null});
+      setQuestionErrors({ ...questionErrors, options: null });
     }
   };
 
@@ -187,9 +189,13 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
           value={formData.title}
           onChange={(e) => updateFormData("title", e.target.value)}
           placeholder="Midterm Calculus Exam"
-          className={`w-full p-2 border ${errors.title ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
+          className={`w-full p-2 border ${
+            errors.title ? "border-red-500" : "border-gray-300"
+          } rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
         />
-        {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+        {errors.title && (
+          <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+        )}
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -200,9 +206,13 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
           value={formData.subject}
           onChange={(e) => updateFormData("subject", e.target.value)}
           placeholder="Mathematics"
-          className={`w-full p-2 border ${errors.subject ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
+          className={`w-full p-2 border ${
+            errors.subject ? "border-red-500" : "border-gray-300"
+          } rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
         />
-        {errors.subject && <p className="text-red-500 text-xs mt-1">{errors.subject}</p>}
+        {errors.subject && (
+          <p className="text-red-500 text-xs mt-1">{errors.subject}</p>
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -214,9 +224,13 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
             min="10"
             value={formData.duration}
             onChange={(e) => updateFormData("duration", e.target.value)}
-            className={`w-full p-2 border ${errors.duration ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
+            className={`w-full p-2 border ${
+              errors.duration ? "border-red-500" : "border-gray-300"
+            } rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
           />
-          {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration}</p>}
+          {errors.duration && (
+            <p className="text-red-500 text-xs mt-1">{errors.duration}</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -226,12 +240,14 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
             type="number"
             min="0"
             value={formData.passingMarks}
-            onChange={(e) =>
-              updateFormData("passingMarks", e.target.value)
-            }
-            className={`w-full p-2 border ${errors.passingMarks ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
+            onChange={(e) => updateFormData("passingMarks", e.target.value)}
+            className={`w-full p-2 border ${
+              errors.passingMarks ? "border-red-500" : "border-gray-300"
+            } rounded-lg focus:ring-2 focus:ring-[#0F6B75] outline-none`}
           />
-          {errors.passingMarks && <p className="text-red-500 text-xs mt-1">{errors.passingMarks}</p>}
+          {errors.passingMarks && (
+            <p className="text-red-500 text-xs mt-1">{errors.passingMarks}</p>
+          )}
         </div>
       </div>
     </div>
@@ -253,15 +269,21 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
   );
 
   const scheduleExam = () => (
-    <Schedule formData={formData} updateFormData={updateFormData} errors={errors} />
+    <Schedule
+      formData={formData}
+      updateFormData={updateFormData}
+      errors={errors}
+    />
   );
 
   const saveExam = () => (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="bg-teal-50 p-6 rounded-xl border border-teal-100 flex items-start gap-4">
-        <CheckCircle className="text-[#0F6B75] mt-1 flex-shrink-0" size={24} />
+        <CheckCircle className="text-[#0F6B75] mt-1 shrink-0" size={24} />
         <div>
-          <h3 className="text-lg font-bold text-[#0F6B75]">Ready to Publish!</h3>
+          <h3 className="text-lg font-bold text-[#0F6B75]">
+            Ready to Publish!
+          </h3>
           <p className="text-teal-700">
             Please review the details below before publishing the exam.
           </p>
@@ -287,12 +309,15 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
           <div>
             <p className="text-sm text-gray-500">Format</p>
             <p className="font-medium text-gray-900">
-              {formData.questions.length} Questions | {formData.totalMarks} Marks
+              {formData.questions.length} Questions | {formData.totalMarks}{" "}
+              Marks
             </p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Duration</p>
-            <p className="font-medium text-gray-900">{formData.duration} mins</p>
+            <p className="font-medium text-gray-900">
+              {formData.duration} mins
+            </p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Randomization</p>
@@ -308,7 +333,9 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-20 md:mb-0">
       {/* Header */}
-      <h2 className="text-2xl font-bold text-[#0F6B75] mb-8">Create New Exam</h2>
+      <h2 className="text-2xl font-bold text-[#0F6B75] mb-8">
+        Create New Exam
+      </h2>
 
       {/* Stepper */}
       <div className="flex items-center justify-between px-2 md:px-10 mb-10 relative overflow-x-auto pb-4 md:pb-0 scrollbar-hide">
@@ -316,7 +343,7 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
         {steps.map((step) => (
           <div
             key={step.number}
-            className={`flex flex-col items-center gap-2 relative z-10 min-w-[80px] md:min-w-0 ${
+            className={`flex flex-col items-center gap-2 relative z-10 min-w-20 md:min-w-0 ${
               step.number <= currentStep ? "text-[#0F6B75]" : "text-gray-400"
             }`}
           >
@@ -329,11 +356,7 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
                   : "bg-white border-2 border-gray-200 text-gray-400"
               }`}
             >
-              {step.number < currentStep ? (
-                <Check size={16} />
-              ) : (
-                step.number
-              )}
+              {step.number < currentStep ? <Check size={16} /> : step.number}
             </div>
             <span className="text-xs md:text-sm font-medium bg-white px-2 whitespace-nowrap">
               {step.title}

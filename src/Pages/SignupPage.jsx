@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MainNavbar from "../components/MainNavbar";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
@@ -12,6 +12,17 @@ export default function SignupPage() {
     role: "",
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser) {
+      if (currentUser.role === "Teacher") {
+        navigate("/teacher-home", { replace: true });
+      } else {
+        navigate("/student-home", { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

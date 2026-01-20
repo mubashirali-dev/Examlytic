@@ -93,7 +93,7 @@ const ViewExam = ({ exam, onBack }) => {
                   <span className="font-bold text-gray-400">Q{idx + 1}.</span>
                   <p className="font-medium text-gray-900">{q.text}</p>
                 </div>
-                <span className="flex-shrink-0 text-xs font-bold bg-gray-100 px-2 py-1 rounded text-gray-600">
+                <span className="shrink-0 text-xs font-bold bg-gray-100 px-2 py-1 rounded text-gray-600">
                   {q.marks} Marks
                 </span>
               </div>

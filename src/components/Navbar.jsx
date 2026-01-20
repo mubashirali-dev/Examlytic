@@ -18,7 +18,7 @@ const Navbar = ({ toggleSidebar }) => {
       </div>
 
       {/* Right side - Hamburger Menu */}
-      <div className="flex items-center justify-end min-w-[40px]">
+      <div className="flex items-center justify-end min-w-10">
         <button
           onClick={toggleSidebar}
           onMouseDown={(e) => e.stopPropagation()}

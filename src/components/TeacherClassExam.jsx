@@ -14,6 +14,10 @@ const TeacherClassExam = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [examToDelete, setExamToDelete] = useState(null);
 
+  // Filters & Sorting
+  const [filterStatus, setFilterStatus] = useState("All Statuses");
+  const [sortBy, setSortBy] = useState("Date");
+
   const [exams, setExams] = useState([
     {
       id: 1,
@@ -219,6 +223,24 @@ const TeacherClassExam = () => {
     setViewingExam(exam);
   };
 
+  // Filter & Sort Logic
+  const filteredAndSortedExams = [...exams]
+    .filter((exam) => 
+      filterStatus === "All Statuses" || exam.status === filterStatus
+    )
+    .sort((a, b) => {
+      if (sortBy === "A-Z") return a.title.localeCompare(b.title);
+      if (sortBy === "Z-A") return b.title.localeCompare(a.title);
+      if (sortBy === "Date") {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA; // Newest first
+      }
+      return 0;
+    });
+
+  const statuses = ["All Statuses", ...new Set(exams.map(e => e.status))];
+
   if (isCreating) {
     return (
         <CreateExam 
@@ -254,19 +276,33 @@ const TeacherClassExam = () => {
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {/* Filters */}
         <div className="p-4 flex flex-wrap gap-4 border-b border-gray-200">
-          <button className="px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-200">
-            All Subjects <ChevronDown size={16} />
-          </button>
-          <button className="px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-200">
-            All Classes <ChevronDown size={16} />
-          </button>
-          <button className="px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-200">
-            All Statuses <ChevronDown size={16} />
-          </button>
+          <div className="flex bg-gray-100 rounded-lg px-2">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-transparent px-2 py-2 text-sm font-medium text-gray-700 outline-none cursor-pointer"
+            >
+              <option value="Date">Sort by Date</option>
+              <option value="A-Z">Sort A-Z</option>
+              <option value="Z-A">Sort Z-A</option>
+            </select>
+          </div>
+
+          <div className="flex bg-gray-100 rounded-lg px-2">
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="bg-transparent px-2 py-2 text-sm font-medium text-gray-700 outline-none cursor-pointer"
+            >
+               {statuses.map(status => (
+                  <option key={status} value={status}>{status}</option>
+               ))}
+            </select>
+          </div>
         </div>
 
         <ManageExamTable 
-            exams={exams} 
+            exams={filteredAndSortedExams} 
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}

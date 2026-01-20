@@ -64,16 +64,16 @@ const MyClass = ({ onViewClass, classes, onDeleteClass, onCreateClass }) => {
                       setIsCreateClassOpen(true);
                       setIsDropdownOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold border-b border-white"
+                    className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold"
                   >
                     New Class
                   </button>
-                  <button className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold border-b border-white">
+                  {/* <button className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold border-b border-white">
                     New Exam
                   </button>
                   <button className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold">
                     Upload Paper
-                  </button>
+                  </button> */}
                 </div>
               </div>
             )}

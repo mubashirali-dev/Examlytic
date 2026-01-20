@@ -8,14 +8,38 @@ import {
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import ConfirmationModal from "./ConfirmationModal";
 
 const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
+  const navigate = useNavigate();
+  const location = useLocation(); // Keep location hook for other potential uses or re-renders
+
   const [isOpen, setIsOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState("Home");
+  
+  // Lazy initialize activeItem based on current URL to prevent stutter
+  const [activeItem, setActiveItem] = useState(() => {
+    const path = location.pathname;
+    if (path === "/teacher-exams") return "Exams";
+    if (path === "/teacher-home" || path === "/student-home") return "Home";
+    return "Home"; // Default fallback
+  });
+
+  const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
   const sidebarRef = useRef(null);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
+  
+  useEffect(() => {
+     const path = location.pathname;
+     let newItem = "Home";
+     if (path === "/teacher-exams") newItem = "Exams";
+     else if (path === "/teacher-home" || path === "/student-home") newItem = "Home";
+     
+     if (activeItem !== newItem) {
+         setActiveItem(newItem);
+     }
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -53,14 +77,18 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
     menuItems = [{ icon: Home, label: "Home" }];
   }
 
-  const navigate = useNavigate();
+  const handleSignOutClick = () => {
+    setIsSignOutModalOpen(true);
+  };
 
-  const handleSignOut = () => {
+  const confirmSignOut = () => {
+    setIsSignOutModalOpen(false);
+    localStorage.removeItem("currentUser");
     navigate("/login", { replace: true });
   };
 
   const bottomItems = [
-    { icon: LogOut, label: "Sign Out", action: handleSignOut },
+    { icon: LogOut, label: "Sign Out", action: handleSignOutClick },
   ];
 
   return (
@@ -102,14 +130,15 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
                   : "hover:bg-white/10"
               }`}
               onClick={() => {
-                setIsOpen(true);
                 setActiveItem(item.label);
                 if (item.label === "Home" && onHomeClick) {
                   onHomeClick();
+                } else if (item.label === "Exams") {
+                  navigate("/teacher-exams");
                 }
               }}
             >
-              <item.icon size={24} className="min-w-[24px]" />
+              <item.icon size={24} className="min-w-6" />
               <span
                 className={`ml-4 font-medium whitespace-nowrap transition-opacity duration-300 ${
                   isOpen || isMobileOpen ? "opacity-100" : "opacity-0 hidden"
@@ -132,11 +161,10 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
               key={index}
               className="flex items-center px-6 cursor-pointer hover:bg-white/10 py-3 transition-colors relative group"
               onClick={() => {
-                setIsOpen(true);
                 if (item.action) item.action();
               }}
             >
-              <item.icon size={24} className="min-w-[24px]" />
+              <item.icon size={24} className="min-w-6" />
               <span
                 className={`ml-4 font-medium whitespace-nowrap transition-opacity duration-300 ${
                   isOpen || isMobileOpen ? "opacity-100" : "opacity-0 hidden"
@@ -153,6 +181,16 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
           ))}
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={isSignOutModalOpen}
+        onClose={() => setIsSignOutModalOpen(false)}
+        onConfirm={confirmSignOut}
+        title="Sign Out"
+        message="Are you sure you want to sign out?"
+        confirmText="Sign Out"
+        isDanger={true}
+      />
     </>
   );
 };

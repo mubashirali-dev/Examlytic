@@ -16,11 +16,29 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
     }
   };
 
+  // Safe date formatter
+  const formatDate = (dateString) => {
+    if (!dateString) return { date: "", time: "" };
+    if (dateString.includes(",")) {
+      const parts = dateString.split(",");
+      if (parts.length >= 3) {
+        return {
+           date: `${parts[0]}, ${parts[1]}`, 
+           time: parts[2] 
+        };
+      }
+    }
+    // Fallback for YYYY-MM-DD or other formats
+    return { date: dateString, time: "" };
+  };
+
   return (
     <>
       {/* Mobile View (Cards) */}
       <div className="md:hidden">
-        {exams.map((exam) => (
+        {exams.map((exam) => {
+          const { date, time } = formatDate(exam.date);
+          return (
           <div
             key={exam.id}
             className="p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors"
@@ -43,10 +61,8 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
 
             <div className="flex justify-between items-end">
               <div className="text-sm text-gray-600">
-                <p>
-                  {exam.date.split(",")[0]}, {exam.date.split(",")[1]}
-                </p>
-                <p>{exam.date.split(",")[2]}</p>
+                <p>{date}</p>
+                <p>{time}</p>
               </div>
 
               <div className="flex gap-3 text-gray-500">
@@ -71,7 +87,7 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
               </div>
             </div>
           </div>
-        ))}
+        )})}
       </div>
 
       {/* Desktop View (Table) */}
@@ -87,7 +103,9 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {exams.map((exam) => (
+            {exams.map((exam) => {
+              const { date, time } = formatDate(exam.date);
+              return (
               <tr key={exam.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 font-medium text-gray-900">
                   {exam.title}
@@ -105,9 +123,9 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-gray-600 text-sm">
-                  {exam.date.split(",")[0]}, {exam.date.split(",")[1]}
+                  {date}
                   <br />
-                  {exam.date.split(",")[2]}
+                  {time}
                 </td>
                 <td className="px-6 py-4 text-center">
                   <div className="flex justify-center items-center gap-3 text-gray-500">
@@ -132,7 +150,7 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
                   </div>
                 </td>
               </tr>
-            ))}
+            )})}
           </tbody>
         </table>
       </div>

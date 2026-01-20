@@ -13,12 +13,22 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
 
   React.useEffect(() => {
+    // Check if user is already logged in
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser) {
+      if (currentUser.role === "Teacher") {
+        navigate("/teacher-home", { replace: true });
+      } else {
+        navigate("/student-home", { replace: true });
+      }
+    }
+
     const savedEmail = localStorage.getItem("rememberedEmail");
     if (savedEmail) {
       setFormData((prev) => ({ ...prev, email: savedEmail }));
       setRememberMe(true);
     }
-  }, []);
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,6 +89,9 @@ export default function LoginPage() {
 
       if (user) {
         console.log("Login successful", user);
+
+        // Save session
+        localStorage.setItem("currentUser", JSON.stringify(user));
 
         if (rememberMe) {
           localStorage.setItem("rememberedEmail", formData.email);

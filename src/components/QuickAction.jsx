@@ -1,8 +1,10 @@
 import { useState } from "react";
 import CreateClass from "./CreateClass";
+import { useNavigate } from "react-router-dom";
 
 const QuickAction = ({ onCreateClass }) => {
   const [isCreateClassOpen, setIsCreateClassOpen] = useState(false);
+  const navigate = useNavigate();
 
   const quickActions = [
     {
@@ -23,6 +25,7 @@ const QuickAction = ({ onCreateClass }) => {
       description: "Check Upcoming Exams of Classes",
       buttonText: "View",
       image: "/upexam.png",
+      onClick: () => navigate("/teacher-exams"),
     },
     {
       title: "Flagged Cheating Cases",
@@ -31,12 +34,12 @@ const QuickAction = ({ onCreateClass }) => {
       image: "/flagcheat.png",
       notification: true,
     },
-    {
-      title: "Manage Students",
-      description: "Add, remove, or manage student details.",
-      buttonText: "Manage",
-      image: "/managestd.png",
-    },
+    // {
+    //   title: "Manage Students",
+    //   description: "Add, remove, or manage student details.",
+    //   buttonText: "Manage",
+    //   image: "/managestd.png",
+    // },
   ];
 
   return (

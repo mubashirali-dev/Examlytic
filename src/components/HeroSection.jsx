@@ -26,7 +26,7 @@ const HeroSection = () => {
 
           <button
             className="hidden md:block px-6 py-2 bg-white text-black rounded-xl font-semibold shadow-md hover:bg-gray-300 transition-all duration-200"
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/login", { replace: true })}
           >
             Sign In
           </button>

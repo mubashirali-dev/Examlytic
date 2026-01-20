@@ -40,7 +40,7 @@ export default function MainNavbar() {
         {!onSignInPage && (
           <button
             className="bg-white text-[#0F6B75] hover:bg-gray-300 font-semibold rounded-xl px-3 py-1.5 text-sm md:px-6 md:py-2 md:text-base transition-all duration-200"
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/login", { replace: true })}
           >
             Login
           </button>
@@ -50,7 +50,7 @@ export default function MainNavbar() {
         {!onSignUpPage && (
           <button
             className="bg-white text-[#0F6B75] hover:bg-gray-300 font-semibold rounded-xl px-3 py-1.5 text-sm md:px-6 md:py-2 md:text-base transition-all duration-200"
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/signup", { replace: true })}
           >
             Sign Up
           </button>

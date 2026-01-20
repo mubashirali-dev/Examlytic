@@ -1,16 +1,10 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar";
-import SlideBar from "../components/Slidebar";
 import StudentMyClass from "../components/StudentMyClass";
 import StudentQuickAction from "../components/StudentQuickAction";
 import StudentClass from "../components/StudentClass";
 
 const StudentHome = () => {
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
-
-  const toggleMobileSidebar = () =>
-    setIsMobileSidebarOpen(!isMobileSidebarOpen);
 
   // Initial Joined Class Data (Mock)
   const [classes, setClasses] = useState([
@@ -21,10 +15,6 @@ const StudentHome = () => {
       image: "/class.png",
     },
   ]);
-
-  const handleHomeClick = () => {
-    setSelectedClass(null);
-  };
 
   const handleJoinClass = (classCode) => {
     // Mock logic to add a class based on code
@@ -42,35 +32,30 @@ const StudentHome = () => {
     alert(`Successfully joined class: ${classCode}`);
   };
 
+  const handleLeaveClass = (classId) => {
+    setClasses((prev) => prev.filter((c) => c.id !== classId));
+    setSelectedClass(null);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Navbar toggleSidebar={toggleMobileSidebar} />
-      <div className="flex flex-1 pt-16">
-        <SlideBar
-          role="Student"
-          isMobileOpen={isMobileSidebarOpen}
-          closeMobileSidebar={() => setIsMobileSidebarOpen(false)}
-          onHomeClick={handleHomeClick}
+    <>
+      {selectedClass ? (
+        <StudentClass
+          classData={selectedClass}
+          onBack={() => setSelectedClass(null)}
+          onLeaveClass={handleLeaveClass}
         />
-        <main className="flex-1 p-4 md:p-10 md:px-20 ml-0 md:ml-20 transition-all duration-300">
-          {selectedClass ? (
-            <StudentClass
-              classData={selectedClass}
-              onBack={() => setSelectedClass(null)}
-            />
-          ) : (
-            <>
-              <StudentMyClass
-                classes={classes}
-                onViewClass={(cls) => setSelectedClass(cls)}
-                onJoinClass={handleJoinClass}
-              />
-              <StudentQuickAction onJoinClass={handleJoinClass} />
-            </>
-          )}
-        </main>
-      </div>
-    </div>
+      ) : (
+        <>
+          <StudentMyClass
+            classes={classes}
+            onViewClass={(cls) => setSelectedClass(cls)}
+            onJoinClass={handleJoinClass}
+          />
+          <StudentQuickAction onJoinClass={handleJoinClass} />
+        </>
+      )}
+    </>
   );
 };
 
