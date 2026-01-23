@@ -5,6 +5,7 @@ import TeacherClassOverview from "./TeacherClassOverview";
 import TeacherClassStudents from "./TeacherClassStudents";
 import TeacherClassExam from "./TeacherClassExam";
 import EditClass from "./EditClass";
+import Material from "./Material";
 
 const TeacherClass = ({ classData, onUpdate }) => {
   const [activeTab, setActiveTab] = useState("Overview");
@@ -42,7 +43,7 @@ const TeacherClass = ({ classData, onUpdate }) => {
         )}
         {activeTab === "Students" && <TeacherClassStudents />}
         {activeTab === "Exams" && <TeacherClassExam />}
-        {activeTab === "Material" && <div>Material Content Placeholder</div>}
+        {activeTab === "Material" && <Material role="Teacher" />}
       </div>
 
       {/* Edit Class Modal */}

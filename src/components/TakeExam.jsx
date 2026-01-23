@@ -177,7 +177,7 @@ const TakeExam = ({ exam, onFinish }) => {
               <button
                 onClick={() =>
                   setCurrentQuestionIndex((curr) =>
-                    Math.min(exam.questionsList.length - 1, curr + 1)
+                    Math.min(exam.questionsList.length - 1, curr + 1),
                   )
                 }
                 className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white bg-[#0F6B75] hover:bg-[#0c565e] shadow-lg shadow-teal-700/20 transition-all hover:scale-105"
@@ -201,8 +201,8 @@ const TakeExam = ({ exam, onFinish }) => {
                   currentQuestionIndex === idx
                     ? "ring-2 ring-[#0F6B75] ring-offset-2 bg-[#0F6B75] text-white"
                     : answers[q.id] !== undefined
-                    ? "bg-teal-100 text-teal-800"
-                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                      ? "bg-teal-100 text-teal-800"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                 }`}
               >
                 {idx + 1}

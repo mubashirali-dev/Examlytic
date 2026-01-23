@@ -78,7 +78,7 @@ export default function SignupPage() {
       const newUser = { ...formData, id: Date.now() };
       localStorage.setItem(
         "users",
-        JSON.stringify([...existingUsers, newUser])
+        JSON.stringify([...existingUsers, newUser]),
       );
 
       console.log("Signup successful", newUser);

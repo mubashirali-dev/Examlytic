@@ -16,11 +16,14 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
   const location = useLocation(); // Keep location hook for other potential uses or re-renders
 
   const [isOpen, setIsOpen] = useState(false);
-  
+
   // Lazy initialize activeItem based on current URL to prevent stutter
   const [activeItem, setActiveItem] = useState(() => {
     const path = location.pathname;
     if (path === "/teacher-exams") return "Exams";
+    if (path === "/teacher-reports") return "Reports";
+    if (path === "/teacher-results") return "Results";
+    if (path === "/student-results") return "My Results";
     if (path === "/teacher-home" || path === "/student-home") return "Home";
     return "Home"; // Default fallback
   });
@@ -29,16 +32,20 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
   const sidebarRef = useRef(null);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
-  
+
   useEffect(() => {
-     const path = location.pathname;
-     let newItem = "Home";
-     if (path === "/teacher-exams") newItem = "Exams";
-     else if (path === "/teacher-home" || path === "/student-home") newItem = "Home";
-     
-     if (activeItem !== newItem) {
-         setActiveItem(newItem);
-     }
+    const path = location.pathname;
+    let newItem = "Home";
+    if (path === "/teacher-exams") newItem = "Exams";
+    else if (path === "/teacher-reports") newItem = "Reports";
+    else if (path === "/teacher-results") newItem = "Results";
+    else if (path === "/student-results") newItem = "My Results";
+    else if (path === "/teacher-home" || path === "/student-home")
+      newItem = "Home";
+
+    if (activeItem !== newItem) {
+      setActiveItem(newItem);
+    }
   }, [location.pathname]);
 
   useEffect(() => {
@@ -135,6 +142,12 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
                   onHomeClick();
                 } else if (item.label === "Exams") {
                   navigate("/teacher-exams");
+                } else if (item.label === "Reports") {
+                  navigate("/teacher-reports");
+                } else if (item.label === "Results") {
+                  navigate("/teacher-results");
+                } else if (item.label === "My Results") {
+                  navigate("/student-results");
                 }
               }}
             >

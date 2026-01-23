@@ -7,6 +7,9 @@ import StudentScreen from "./Pages/StudentScreen.jsx";
 import TeacherHome from "./Pages/TeacherHome.jsx";
 import StudentHome from "./Pages/StudentHome.jsx";
 import TeacherExam from "./Pages/TeacherExam.jsx";
+import TeacherReport from "./Pages/TeacherReport.jsx";
+import TeacherResult from "./Pages/TeacherResult.jsx";
+import StudentResult from "./Pages/StudentResult.jsx";
 
 export default function App() {
   return (
@@ -20,11 +23,14 @@ export default function App() {
         <Route element={<TeacherScreen />}>
           <Route path="/teacher-home" element={<TeacherHome />} />
           <Route path="/teacher-exams" element={<TeacherExam />} />
+          <Route path="/teacher-reports" element={<TeacherReport />} />
+          <Route path="/teacher-results" element={<TeacherResult />} />
         </Route>
 
         {/* Student Routes Layout */}
         <Route element={<StudentScreen />}>
           <Route path="/student-home" element={<StudentHome />} />
+          <Route path="/student-results" element={<StudentResult />} />
         </Route>
       </Routes>
     </Router>

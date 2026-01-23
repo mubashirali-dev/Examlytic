@@ -58,7 +58,7 @@ const TeacherHome = () => {
 
   const handleUpdateClass = (updatedClass) => {
     setClasses((prev) =>
-      prev.map((c) => (c.id === updatedClass.id ? updatedClass : c))
+      prev.map((c) => (c.id === updatedClass.id ? updatedClass : c)),
     );
     // Update selected class if it's the one being edited
     if (selectedClass && selectedClass.id === updatedClass.id) {
@@ -77,10 +77,7 @@ const TeacherHome = () => {
   return (
     <>
       {selectedClass ? (
-        <TeacherClass
-          classData={selectedClass}
-          onUpdate={handleUpdateClass}
-        />
+        <TeacherClass classData={selectedClass} onUpdate={handleUpdateClass} />
       ) : (
         <>
           <MyClass

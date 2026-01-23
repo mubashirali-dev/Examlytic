@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, LogOut } from "lucide-react";
 import StudentClassExam from "./StudentClassExam";
-import StudentClassMaterial from "./StudentClassMaterial";
+import Material from "./Material";
 import ConfirmationModal from "./ConfirmationModal";
 
 const StudentClass = ({ classData, onBack, onLeaveClass }) => {
@@ -68,7 +68,7 @@ const StudentClass = ({ classData, onBack, onLeaveClass }) => {
       {/* Content Area */}
       <div className="mt-6">
         {activeTab === "Exams" && <StudentClassExam />}
-        {activeTab === "Material" && <StudentClassMaterial />}
+        {activeTab === "Material" && <Material role="Student" />}
       </div>
 
       <ConfirmationModal

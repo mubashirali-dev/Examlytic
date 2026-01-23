@@ -98,9 +98,9 @@ const TeacherExam = () => {
   const handleEdit = (exam) => {
     // Ensure questions array exists for CreateExam
     const examToEdit = {
-        ...exam,
-        questions: exam.questionsList || [] 
-        // If we were real, we'd fetch the full exam details here
+      ...exam,
+      questions: exam.questionsList || [],
+      // If we were real, we'd fetch the full exam details here
     };
     setSelectedExam(examToEdit);
     setIsEditMode(true);
@@ -120,9 +120,9 @@ const TeacherExam = () => {
   const handleSaveExam = (updatedExam) => {
     // Update existing exam
     const formattedDate = updatedExam.date;
-    
+
     setExams((prev) =>
-      prev.map((e) => (e.id === updatedExam.id ? { ...e, ...updatedExam } : e))
+      prev.map((e) => (e.id === updatedExam.id ? { ...e, ...updatedExam } : e)),
     );
     setIsEditMode(false);
     setSelectedExam(null);
@@ -133,8 +133,8 @@ const TeacherExam = () => {
       <ViewExam
         exam={selectedExam}
         onBack={() => {
-            setIsViewMode(false);
-            setSelectedExam(null);
+          setIsViewMode(false);
+          setSelectedExam(null);
         }}
       />
     );
@@ -146,8 +146,8 @@ const TeacherExam = () => {
         initialData={selectedExam}
         onSave={handleSaveExam}
         onBack={() => {
-            setIsEditMode(false);
-            setSelectedExam(null);
+          setIsEditMode(false);
+          setSelectedExam(null);
         }}
       />
     );

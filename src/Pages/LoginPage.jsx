@@ -84,7 +84,7 @@ export default function LoginPage() {
 
       // Find user
       const user = allUsers.find(
-        (u) => u.email === formData.email && u.password === formData.password
+        (u) => u.email === formData.email && u.password === formData.password,
       );
 
       if (user) {

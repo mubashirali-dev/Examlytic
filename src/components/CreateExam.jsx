@@ -18,7 +18,7 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
       startTime: "",
       endTime: "",
       randomize: false,
-    }
+    },
   );
 
   // Step 2: Question State
@@ -352,8 +352,8 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
                 step.number < currentStep
                   ? "bg-[#0F6B75] text-white"
                   : step.number === currentStep
-                  ? "bg-white border-2 border-[#0F6B75] text-[#0F6B75]"
-                  : "bg-white border-2 border-gray-200 text-gray-400"
+                    ? "bg-white border-2 border-[#0F6B75] text-[#0F6B75]"
+                    : "bg-white border-2 border-gray-200 text-gray-400"
               }`}
             >
               {step.number < currentStep ? <Check size={16} /> : step.number}
