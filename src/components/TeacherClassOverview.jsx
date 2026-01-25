@@ -28,7 +28,7 @@ const TeacherClassOverview = ({ classData }) => {
             <p className="text-gray-600 text-sm mb-2">
               examlytic.com/join/EXM-67890
             </p>
-            <button className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-xs font-medium transition-colors">
+            <button className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-xs font-medium transition-colors cursor-pointer">
               Copy Link
             </button>
           </div>

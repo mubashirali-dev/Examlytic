@@ -54,7 +54,7 @@ export default function Footer() {
       </div>
 
       <p className="text-white text-xs md:text-sm mt-4 md:mt-8">
-        © 2025 Examlytic. All rights reserved
+        © 2026 Examlytic. All rights reserved
       </p>
     </footer>
   );

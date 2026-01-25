@@ -54,7 +54,7 @@ const CreateClass = ({ isOpen, onClose, onCreate }) => {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
         >
           <X size={24} />
         </button>
@@ -119,7 +119,7 @@ const CreateClass = ({ isOpen, onClose, onCreate }) => {
           <div className="pt-4 flex justify-center">
             <button
               type="submit"
-              className="bg-[#0F6B75] text-white px-8 py-2 rounded-lg font-bold hover:bg-[#0c565e] transition-colors shadow-md w-full sm:w-auto"
+              className="bg-[#0F6B75] text-white px-8 py-2 rounded-lg font-bold hover:bg-[#0c565e] transition-colors shadow-md w-full sm:w-auto cursor-pointer"
             >
               Create Class
             </button>

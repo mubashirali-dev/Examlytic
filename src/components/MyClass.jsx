@@ -51,7 +51,7 @@ const MyClass = ({ onViewClass, classes, onDeleteClass, onCreateClass }) => {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={toggleDropdown}
-              className="bg-[#0F6B75] text-white p-2 rounded-full hover:bg-[#0c565e] transition-colors shadow-md"
+              className="bg-[#0F6B75] text-white p-2 rounded-full hover:bg-[#0c565e] transition-colors shadow-md cursor-pointer"
             >
               <Plus size={24} />
             </button>
@@ -64,7 +64,7 @@ const MyClass = ({ onViewClass, classes, onDeleteClass, onCreateClass }) => {
                       setIsCreateClassOpen(true);
                       setIsDropdownOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold"
+                    className="block w-full text-left px-4 py-3 text-white hover:bg-[#0c565e] font-bold cursor-pointer"
                   >
                     New Class
                   </button>

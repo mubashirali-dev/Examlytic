@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ManageExamTable from "../components/ManageExamTable";
+import DropDownMenu from "../components/DropDownMenu";
 import CreateExam from "../components/CreateExam";
 import ViewExam from "../components/ViewExam";
 import ConfirmationModal from "../components/ConfirmationModal";
@@ -170,47 +171,21 @@ const TeacherExam = () => {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-3">
-          <div className="pr-2 flex bg-gray-200 rounded-lg">
-            <select
-              value={filterSubject}
-              onChange={(e) => setFilterSubject(e.target.value)}
-              className="text-gray-700 text-sm font-medium focus:ring-[#0F6B75] focus:border-[#0F6B75] block p-2.5 outline-none"
-            >
-              {subjects.map((subject) => (
-                <option key={subject} value={subject}>
-                  {subject}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="pr-2 flex bg-gray-200 rounded-lg">
-            <select
-              value={filterClass}
-              onChange={(e) => setFilterClass(e.target.value)}
-              className="text-gray-700 text-sm font-medium rounded-lg focus:ring-[#0F6B75] focus:border-[#0F6B75] block p-2.5 outline-none"
-            >
-              {classes.map((cls) => (
-                <option key={cls} value={cls}>
-                  {cls}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="pr-2 flex bg-gray-200 rounded-lg">
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="text-gray-700 text-sm font-medium rounded-lg focus:ring-[#0F6B75] focus:border-[#0F6B75] block p-2.5 outline-none"
-            >
-              {statuses.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </div>
+          <DropDownMenu
+            options={subjects}
+            value={filterSubject}
+            onChange={setFilterSubject}
+          />
+          <DropDownMenu
+            options={classes}
+            value={filterClass}
+            onChange={setFilterClass}
+          />
+          <DropDownMenu
+            options={statuses}
+            value={filterStatus}
+            onChange={setFilterStatus}
+          />
         </div>
       </div>
 

@@ -1,11 +1,28 @@
 import React, { useState } from "react";
 import { FileText, Video, Link as LinkIcon, Download, Plus, Pencil, Trash2, X } from "lucide-react";
+import ConfirmationModal from "./ConfirmationModal";
+import DropDownMenu from "./DropDownMenu";
 
 // Simple Modal for Adding/Editing Material
 const MaterialModal = ({ isOpen, onClose, onSave, initialData }) => {
   const [formData, setFormData] = useState(
     initialData || { title: "", type: "pdf", date: new Date().toLocaleDateString() }
   );
+
+  const typeMap = {
+    "PDF Document": "pdf",
+    "Video": "video",
+    "Word Document": "doc",
+    "External Link": "link"
+  };
+  
+  const reverseTypeMap = {
+    "pdf": "PDF Document",
+    "video": "Video",
+    "doc": "Word Document",
+    "link": "External Link"
+  };
+  const options = Object.keys(typeMap);
 
   if (!isOpen) return null;
 
@@ -16,7 +33,7 @@ const MaterialModal = ({ isOpen, onClose, onSave, initialData }) => {
           <h2 className="text-xl font-bold text-[#0F6B75]">
             {initialData ? "Edit Material" : "Add Material"}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer">
             <X size={24} />
           </button>
         </div>
@@ -34,20 +51,15 @@ const MaterialModal = ({ isOpen, onClose, onSave, initialData }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-            <select
-              value={formData.type}
-              onChange={(e) => setFormData({...formData, type: e.target.value})}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F6B75]/20 focus:border-[#0F6B75]"
-            >
-              <option value="pdf">PDF Document</option>
-              <option value="video">Video</option>
-              <option value="doc">Word Document</option>
-              <option value="link">External Link</option>
-            </select>
+            <DropDownMenu 
+              options={options}
+              value={reverseTypeMap[formData.type] || "PDF Document"}
+              onChange={(label) => setFormData({...formData, type: typeMap[label]})}
+            />
           </div>
           <button
             onClick={() => onSave(formData)}
-            className="w-full bg-[#0F6B75] text-white py-2 rounded-lg font-bold hover:bg-[#0c565e] transition-colors mt-2"
+            className="w-full bg-[#0F6B75] text-white py-2 rounded-lg font-bold hover:bg-[#0c565e] transition-colors mt-2 cursor-pointer"
           >
             Save Material
           </button>
@@ -84,6 +96,9 @@ const Material = ({ role = "Student" }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState(null);
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [materialToDelete, setMaterialToDelete] = useState(null);
+
   const getIcon = (type) => {
     switch (type) {
       case "pdf":
@@ -108,8 +123,15 @@ const Material = ({ role = "Student" }) => {
   };
 
   const handleDelete = (id) => {
-    if (confirm("Are you sure you want to delete this material?")) {
-      setMaterials(materials.filter(m => m.id !== id));
+    setMaterialToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (materialToDelete) {
+      setMaterials(materials.filter((m) => m.id !== materialToDelete));
+      setMaterialToDelete(null);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -120,7 +142,7 @@ const Material = ({ role = "Student" }) => {
         {role === "Teacher" && (
           <button 
             onClick={() => { setEditingMaterial(null); setIsModalOpen(true); }}
-            className="flex items-center gap-2 bg-[#0F6B75] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#0c565e] transition-colors"
+            className="flex items-center gap-2 bg-[#0F6B75] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#0c565e] transition-colors cursor-pointer"
           >
             <Plus size={18} />
             Add Material
@@ -149,19 +171,19 @@ const Material = ({ role = "Student" }) => {
                 <>
                   <button 
                     onClick={() => { setEditingMaterial(item); setIsModalOpen(true); }}
-                    className="p-2 text-gray-400 hover:text-[#0F6B75] hover:bg-teal-50 rounded-lg transition-colors"
+                    className="p-2 text-gray-400 hover:text-[#0F6B75] hover:bg-teal-50 rounded-lg transition-colors cursor-pointer"
                   >
                     <Pencil size={20} />
                   </button>
                   <button 
                     onClick={() => handleDelete(item.id)}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                   >
                     <Trash2 size={20} />
                   </button>
                 </>
               ) : (
-                <button className="p-2 text-gray-400 hover:text-[#0F6B75] hover:bg-teal-50 rounded-lg transition-colors">
+                <button className="p-2 text-gray-400 hover:text-[#0F6B75] hover:bg-teal-50 rounded-lg transition-colors cursor-pointer">
                   <Download size={20} />
                 </button>
               )}
@@ -184,6 +206,17 @@ const Material = ({ role = "Student" }) => {
             initialData={editingMaterial}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Material"
+        message="Are you sure you want to delete this material? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDanger={true}
+      />
     </div>
   );
 };

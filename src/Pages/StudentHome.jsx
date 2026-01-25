@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import StudentMyClass from "../components/StudentMyClass";
 import StudentQuickAction from "../components/StudentQuickAction";
 import StudentClass from "../components/StudentClass";
 
 const StudentHome = () => {
-  const [selectedClass, setSelectedClass] = useState(null);
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  const classId = searchParams.get("classId");
+  
   // Initial Joined Class Data (Mock)
   const [classes, setClasses] = useState([
     {
@@ -15,6 +17,10 @@ const StudentHome = () => {
       image: "/class.png",
     },
   ]);
+
+  const selectedClass = classId 
+    ? classes.find(c => c.id === Number(classId)) 
+    : null;
 
   const handleJoinClass = (classCode) => {
     // Mock logic to add a class based on code
@@ -34,7 +40,7 @@ const StudentHome = () => {
 
   const handleLeaveClass = (classId) => {
     setClasses((prev) => prev.filter((c) => c.id !== classId));
-    setSelectedClass(null);
+    setSearchParams({}); // Go back to list view
   };
 
   return (
@@ -42,14 +48,14 @@ const StudentHome = () => {
       {selectedClass ? (
         <StudentClass
           classData={selectedClass}
-          onBack={() => setSelectedClass(null)}
+          onBack={() => setSearchParams({})}
           onLeaveClass={handleLeaveClass}
         />
       ) : (
         <>
           <StudentMyClass
             classes={classes}
-            onViewClass={(cls) => setSelectedClass(cls)}
+            onViewClass={(cls) => setSearchParams({ classId: cls.id })}
             onJoinClass={handleJoinClass}
           />
           <StudentQuickAction onJoinClass={handleJoinClass} />

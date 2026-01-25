@@ -1,22 +1,25 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import JoinClass from "./JoinClass";
 
 const StudentQuickAction = ({ onJoinClass }) => {
   const [isJoinClassOpen, setIsJoinClassOpen] = useState(false);
+  const navigate = useNavigate();
 
   const quickActions = [
     {
       title: "Join Class",
       description: "Join a new class using a code",
       buttonText: "Join",
-      image: "/createclass.png", // Reusing image
+      image: "/createclass.png",
       onClick: () => setIsJoinClassOpen(true),
     },
     {
       title: "My Results",
       description: "Check your latest exam results",
       buttonText: "View",
-      image: "/clasperfmce.png", // Reusing image
+      image: "/clasperfmce.png",
+      onClick: () => navigate("/student-results"),
     },
   ];
 
@@ -42,7 +45,7 @@ const StudentQuickAction = ({ onJoinClass }) => {
               </div>
               <button
                 onClick={e.onClick}
-                className="bg-[#0F6B75] text-white px-6 py-1.5 rounded-lg text-sm font-medium hover:bg-[#0c565e] transition-colors mt-2"
+                className="bg-[#0F6B75] text-white px-6 py-1.5 rounded-lg text-sm font-medium hover:bg-[#0c565e] transition-colors mt-2 cursor-pointer"
               >
                 {e.buttonText}
               </button>

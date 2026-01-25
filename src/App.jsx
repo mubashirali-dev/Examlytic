@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import MainScreen from "./Pages/mainScreen.jsx";
 import LoginPage from "./Pages/LoginPage.jsx";
-import SignupPage from "./Pages/SignupPage.jsx";
+import TeacherSignUp from "./Pages/TeacherSignUp.jsx";
+import StudentSignUp from "./Pages/StudentSignUp.jsx";
 import TeacherScreen from "./Pages/TeacherScreen.jsx";
 import StudentScreen from "./Pages/StudentScreen.jsx";
 import TeacherHome from "./Pages/TeacherHome.jsx";
@@ -18,7 +19,12 @@ export default function App() {
       <Routes>
         <Route path="/" element={<MainScreen />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+        
+        {/* Signup Routes */}
+        <Route path="/signup-teacher" element={<TeacherSignUp />} />
+        <Route path="/signup-student" element={<StudentSignUp />} />
+        {/* Redirect /signup to /signup-teacher by default or as requested */}
+        <Route path="/signup" element={<Navigate to="/signup-teacher" replace />} />
         <Route path="/admin" element={<Admin />} />
         
         {/* Teacher Routes Layout */}
