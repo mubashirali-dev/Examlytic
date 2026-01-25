@@ -10,6 +10,7 @@ import TeacherExam from "./Pages/TeacherExam.jsx";
 import TeacherReport from "./Pages/TeacherReport.jsx";
 import TeacherResult from "./Pages/TeacherResult.jsx";
 import StudentResult from "./Pages/StudentResult.jsx";
+import Admin from "./Admin.jsx";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/" element={<MainScreen />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/admin" element={<Admin />} />
         
         {/* Teacher Routes Layout */}
         <Route element={<TeacherScreen />}>
