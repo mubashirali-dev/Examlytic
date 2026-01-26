@@ -68,19 +68,19 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
                 <div className="flex gap-3 text-gray-500">
                   <button
                     onClick={() => onView(exam)}
-                    className="hover:text-[#0F6B75] transition-colors"
+                    className="hover:text-[#0F6B75] transition-colors cursor-pointer"
                   >
                     <Eye size={18} />
                   </button>
                   <button
                     onClick={() => onEdit(exam)}
-                    className="hover:text-[#0F6B75] transition-colors"
+                    className="hover:text-[#0F6B75] transition-colors cursor-pointer"
                   >
                     <Edit2 size={18} />
                   </button>
                   <button
                     onClick={() => onDelete(exam)}
-                    className="hover:text-red-600 transition-colors"
+                    className="hover:text-red-600 transition-colors cursor-pointer"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -135,19 +135,19 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
                     <div className="flex justify-center items-center gap-3 text-gray-500">
                       <button
                         onClick={() => onView(exam)}
-                        className="hover:text-[#0F6B75] transition-colors"
+                        className="hover:text-[#0F6B75] transition-colors cursor-pointer"
                       >
                         <Eye size={18} />
                       </button>
                       <button
                         onClick={() => onEdit(exam)}
-                        className="hover:text-[#0F6B75] transition-colors"
+                        className="hover:text-[#0F6B75] transition-colors cursor-pointer"
                       >
                         <Edit2 size={18} />
                       </button>
                       <button
                         onClick={() => onDelete(exam)}
-                        className="hover:text-red-600 transition-colors"
+                        className="hover:text-red-600 transition-colors cursor-pointer"
                       >
                         <Trash2 size={18} />
                       </button>

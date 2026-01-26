@@ -149,7 +149,7 @@ const StudentClassExam = () => {
                   <button
                     onClick={() => handleTakeExam(exam)}
                     disabled={exam.status !== "Available"}
-                    className={`px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-colors ${
+                    className={`px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-colors cursor-pointer ${
                       exam.status === "Available"
                         ? "bg-[#0F6B75] text-white hover:bg-[#0c565e] shadow-sm"
                         : "bg-gray-100 text-gray-400"

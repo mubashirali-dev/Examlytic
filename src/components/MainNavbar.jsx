@@ -8,7 +8,7 @@ export default function MainNavbar() {
   const navigate = useNavigate();
 
   const onSignInPage = location.pathname === "/login";
-  const onSignUpPage = location.pathname === "/signup";
+  const onSignUpPage = ["/signup", "/signup-teacher", "/signup-student"].includes(location.pathname);
 
   return (
     <nav className="w-full h-16 bg-[#0F6B75] py-4 px-4 flex items-center justify-between relative">

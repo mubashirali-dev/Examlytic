@@ -377,7 +377,7 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
       <div className="flex flex-col md:flex-row justify-between pt-6 border-t border-gray-100 gap-4">
         <button
           onClick={handleBack}
-          className="w-full md:w-auto px-6 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors order-2 md:order-1"
+          className="w-full md:w-auto px-6 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors order-2 md:order-1 cursor-pointer"
         >
           <ArrowLeft size={18} />
           {currentStep === 1 ? "Cancel" : "Back"}
@@ -387,13 +387,13 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
             <>
               <button
                 onClick={() => onSave({ ...formData, status: "Draft" })}
-                className="w-full md:w-auto px-6 py-2 rounded-lg font-medium text-[#0F6B75] border border-[#0F6B75] hover:bg-teal-50 transition-colors"
+                className="w-full md:w-auto px-6 py-2 rounded-lg font-medium text-[#0F6B75] border border-[#0F6B75] hover:bg-teal-50 transition-colors cursor-pointer"
               >
                 Save Draft
               </button>
               <button
                 onClick={() => onSave({ ...formData, status: "Published" })}
-                className="w-full md:w-auto px-6 py-2 rounded-lg font-medium text-white bg-[#0F6B75] hover:bg-[#0c565e] flex items-center justify-center gap-2 transition-colors"
+                className="w-full md:w-auto px-6 py-2 rounded-lg font-medium text-white bg-[#0F6B75] hover:bg-[#0c565e] flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <Save size={18} />
                 Publish Exam
@@ -402,7 +402,7 @@ const CreateExam = ({ onBack, onSave, initialData }) => {
           ) : (
             <button
               onClick={handleNext}
-              className="w-full md:w-auto px-6 py-2 rounded-lg font-medium text-white bg-[#0F6B75] hover:bg-[#0c565e] flex items-center justify-center gap-2 transition-colors"
+              className="w-full md:w-auto px-6 py-2 rounded-lg font-medium text-white bg-[#0F6B75] hover:bg-[#0c565e] flex items-center justify-center gap-2 transition-colors cursor-pointer"
             >
               Next Step
               <ArrowRight size={18} />

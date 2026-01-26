@@ -19,13 +19,13 @@ const ConfirmationModal = ({
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-gray-600 font-medium hover:bg-gray-100 transition-colors"
+            className="px-4 py-2 rounded-lg text-gray-600 font-medium hover:bg-gray-100 transition-colors cursor-pointer"
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-2 rounded-lg text-white font-medium shadow-sm transition-colors ${
+            className={`px-4 py-2 rounded-lg text-white font-medium shadow-sm transition-colors cursor-pointer ${
               isDanger
                 ? "bg-red-600 hover:bg-red-700"
                 : "bg-[#0F6B75] hover:bg-[#0c565e]"

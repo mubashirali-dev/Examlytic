@@ -9,7 +9,7 @@ const ViewExam = ({ exam, onBack }) => {
       <div className="flex items-center gap-4 mb-8">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 cursor-pointer"
         >
           <ArrowLeft size={24} />
         </button>
@@ -121,7 +121,6 @@ const ViewExam = ({ exam, onBack }) => {
           ))
         ) : (
           // Mock questions placeholder if no list exists in the exam object
-          // (Since our initial mock data just had 'questions: 20' count but no list)
           <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
             <p className="text-gray-500">
               No question details available for this exam.

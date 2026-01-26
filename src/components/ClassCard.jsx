@@ -13,7 +13,7 @@ const ClassCard = ({ title, section, image, onView, onDelete }) => {
         <div className="mt-auto">
           <button
             onClick={onView}
-            className="bg-[#0F6B75] text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-[#0c565e] transition-colors"
+            className="bg-[#0F6B75] text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-[#0c565e] transition-colors cursor-pointer"
           >
             View Class
           </button>
@@ -26,7 +26,7 @@ const ClassCard = ({ title, section, image, onView, onDelete }) => {
             e.stopPropagation(); // Prevent triggering parent clicks if any
             onDelete();
           }}
-          className="rounded-full absolute -bottom-3 right-4 text-white hover:opacity-90 transition-opacity shadow-md"
+          className="rounded-full absolute -bottom-3 right-4 text-white hover:opacity-90 transition-opacity shadow-md cursor-pointer"
         >
           <div className="bg-[#0F6B75] p-2 rounded-full">
             <Trash2 size={18} />

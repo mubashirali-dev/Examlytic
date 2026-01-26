@@ -14,7 +14,7 @@ const Navbar = ({ toggleSidebar }) => {
 
       <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
         <img src="/logo.png" alt="Examlytic Logo" className="w-14 h-12" />
-        <span className="text-2xl font-bold tracking-wide">Examlytic</span>
+        <span className="text-2xl font-bold tracking-wide cursor-default">Examlytic</span>
       </div>
 
       {/* Right side - Hamburger Menu */}

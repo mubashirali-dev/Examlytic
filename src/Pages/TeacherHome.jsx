@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import MyClass from "../components/MyClass";
 import QuickAction from "../components/QuickAction";
 import TeacherClass from "../components/TeacherClass";
 
 const TeacherHome = () => {
-  const [selectedClass, setSelectedClass] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const classId = searchParams.get("classId");
 
   // Initial Class Data
   const [classes, setClasses] = useState([
@@ -45,6 +47,10 @@ const TeacherHome = () => {
     },
   ]);
 
+  const selectedClass = classId
+    ? classes.find((c) => c.id === Number(classId))
+    : null;
+
   const handleAddClass = (newClassData) => {
     const newClass = {
       id: Date.now(), // Simple unique ID
@@ -60,17 +66,14 @@ const TeacherHome = () => {
     setClasses((prev) =>
       prev.map((c) => (c.id === updatedClass.id ? updatedClass : c)),
     );
-    // Update selected class if it's the one being edited
-    if (selectedClass && selectedClass.id === updatedClass.id) {
-      setSelectedClass(updatedClass);
-    }
+    // URL param stays same, just content updates
   };
 
   const handleDeleteClass = (id) => {
     setClasses((prev) => prev.filter((c) => c.id !== id));
-    // If the deleted class was selected, return to home
+    // If the deleted class was selected (visible), return to home
     if (selectedClass && selectedClass.id === id) {
-      setSelectedClass(null);
+      setSearchParams({});
     }
   };
 
@@ -84,7 +87,7 @@ const TeacherHome = () => {
             classes={classes}
             onDeleteClass={handleDeleteClass}
             onCreateClass={handleAddClass}
-            onViewClass={(cls) => setSelectedClass(cls)}
+            onViewClass={(cls) => setSearchParams({ classId: cls.id })}
           />
           <QuickAction onCreateClass={handleAddClass} />
         </>

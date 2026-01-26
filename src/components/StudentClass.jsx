@@ -13,25 +13,7 @@ const StudentClass = ({ classData, onBack, onLeaveClass }) => {
     <div className="bg-white rounded-2xl shadow-lg p-4 md:p-10 md:pt-6 relative border border-gray-200 mb-8 min-h-[80vh]">
       {/* Class Header */}
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-gray-500 hover:text-[#0F6B75] transition-colors text-sm font-medium"
-          >
-            <ArrowLeft size={18} />
-            Back to Dashboard
-          </button>
-
-          <button
-            onClick={() => setIsLeaveModalOpen(true)}
-            className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors text-sm font-medium border border-transparent hover:border-red-100"
-          >
-            <LogOut size={18} />
-            Leave Class
-          </button>
-        </div>
-
-        <div className="flex items-start gap-4">
+        <div className="flex justify-between items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold text-[#0F6B75]">
               Class: {classData.title}
@@ -40,6 +22,13 @@ const StudentClass = ({ classData, onBack, onLeaveClass }) => {
               {classData.section}
             </p>
           </div>
+          <button
+            onClick={() => setIsLeaveModalOpen(true)}
+            className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors text-sm font-medium border border-transparent hover:border-red-100 cursor-pointer"
+          >
+            <LogOut size={18} />
+            Leave Class
+          </button>
         </div>
       </div>
 
@@ -51,7 +40,7 @@ const StudentClass = ({ classData, onBack, onLeaveClass }) => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`
-                py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                py-4 px-1 border-b-2 font-medium text-sm transition-colors cursor-pointer
                 ${
                   activeTab === tab
                     ? "border-[#0F6B75] text-[#0F6B75]"

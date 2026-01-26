@@ -12,6 +12,7 @@ const QuickAction = ({ onCreateClass }) => {
       description: "Check Class Performance on the go",
       buttonText: "Check",
       image: "/clasperfmce.png",
+      onClick: () => navigate("/teacher-reports"),
     },
     {
       title: "Create Class",
@@ -67,7 +68,7 @@ const QuickAction = ({ onCreateClass }) => {
               </div>
               <button
                 onClick={e.onClick}
-                className="bg-[#0F6B75] text-white px-6 py-1.5 rounded-lg text-sm font-medium hover:bg-[#0c565e] transition-colors mt-2"
+                className="bg-[#0F6B75] text-white px-6 py-1.5 rounded-lg text-sm font-medium hover:bg-[#0c565e] transition-colors mt-2 cursor-pointer"
               >
                 {e.buttonText}
               </button>

@@ -87,7 +87,7 @@ const TeacherClassStudents = () => {
             </div>
             <button
               onClick={() => handleRemoveClick(student)}
-              className="text-red-500 p-2 hover:bg-red-50 rounded-full transition-colors"
+              className="text-red-500 p-2 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
               title="Remove Student"
             >
               <Trash size={20} />
