@@ -12,6 +12,7 @@ import TeacherReport from "./Pages/TeacherReport.jsx";
 import TeacherResult from "./Pages/TeacherResult.jsx";
 import StudentResult from "./Pages/StudentResult.jsx";
 import Admin from "./Admin.jsx";
+import StudentAdmin from "./components/StudentAdmin.jsx";
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/teacher-home" element={<TeacherHome />} />
           <Route path="/teacher-exams" element={<TeacherExam />} />
           <Route path="/teacher-reports" element={<TeacherReport />} />
+          <Route path="/inviteStudent" element={<StudentAdmin />} />
           <Route path="/teacher-results" element={<TeacherResult />} />
         </Route>
 
