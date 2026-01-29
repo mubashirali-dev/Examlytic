@@ -7,6 +7,7 @@ import {
   LogOut,
   ChevronRight,
   ChevronLeft,
+  UserPlus,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ConfirmationModal from "./ConfirmationModal";
@@ -73,6 +74,7 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
       { icon: ClipboardList, label: "Exams" },
       { icon: CheckSquare, label: "Results" },
       { icon: BarChart2, label: "Reports" },
+      {icon : UserPlus , label :"Student Management"}
     ];
   } else if (role === "Student") {
     menuItems = [
@@ -144,6 +146,8 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
                   navigate("/teacher-exams");
                 } else if (item.label === "Reports") {
                   navigate("/teacher-reports");
+                }else if (item.label === "Student Management") {
+                  navigate("/inviteStudent");
                 } else if (item.label === "Results") {
                   navigate("/teacher-results");
                 } else if (item.label === "My Results") {

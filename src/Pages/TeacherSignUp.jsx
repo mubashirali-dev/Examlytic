@@ -1,54 +1,76 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import MainNavbar from "../components/MainNavbar";
 import Footer from "../components/Footer";
 
 const TeacherSignUp = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const emailFromUrl = searchParams.get("email");
+  const sanitizedEmail = emailFromUrl
+    ? decodeURIComponent(emailFromUrl).replace(/'/g, "")
+    : "";
+
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    profilePicture: null,
-    gender: "",
-    dob: "",
-    facultyId: "",
-    department: "",
-    role: "", // e.g., Lecturer, Professor
-    userRole: "Teacher", // System role
+    phone: "",
+    qualification: "",
+    experience: "",
   });
-  const [errors, setErrors] = useState({});
 
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+
+  // Prefill email from URL
+  useEffect(() => {
+    if (sanitizedEmail) {
+      setFormData((prev) => ({
+        ...prev,
+        email: sanitizedEmail,
+      }));
+    }
+  }, [sanitizedEmail]);
+
+  // Redirect if already logged in
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     if (currentUser) {
-      if (currentUser.role === "Teacher") {
-        navigate("/teacher-home", { replace: true });
-      } else {
-        navigate("/student-home", { replace: true });
-      }
+      navigate("/teacher-home", { replace: true });
     }
   }, [navigate]);
 
+  // Handle input changes
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "profilePicture") {
-        setFormData((prev) => ({ ...prev, [name]: files[0] }));
-    } else {
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    const { name, value } = e.target;
+
+    // Prevent editing email if coming from URL
+    if (name === "email" && sanitizedEmail) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+
+    if (apiError) setApiError("");
   };
 
+  // Validation
   const validateForm = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
@@ -61,236 +83,189 @@ const TeacherSignUp = () => {
       newErrors.password = "Password must be at least 8 characters";
     }
 
-    if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    if (!formData.facultyId.trim()) newErrors.facultyId = "Faculty ID is required";
-    if (!formData.department.trim()) newErrors.department = "Department is required";
-    if (!formData.role.trim()) newErrors.role = "Role is required";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSignup = (e) => {
+  // Submit handler (BACKEND CONNECTED)
+  const handleSignup = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      // Mock Backend: Save user to localStorage
-      const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+    if (!validateForm()) return;
 
-      if (existingUsers.some((u) => u.email === formData.email)) {
-        setErrors((prev) => ({ ...prev, email: "Email is already registered" }));
-        return;
+    setLoading(true);
+    setApiError("");
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/teacher/teacher-signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            phone: formData.phone,
+            qualification: formData.qualification,
+            experience: formData.experience,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Signup failed");
       }
 
-      const { confirmPassword, profilePicture, userRole, ...userData } = formData;
-      const newUser = { 
-          ...userData, 
-          role: userRole, // Ensure system role is correctly set
-          id: Date.now(),
-          profilePictureName: profilePicture ? profilePicture.name : null 
-      };
-
-      localStorage.setItem("users", JSON.stringify([...existingUsers, newUser]));
-
-      console.log("Teacher Signup successful", newUser);
-      alert("Teacher account created successfully! Please log in.");
+      alert("Teacher account created successfully!");
       navigate("/login", { replace: true });
+
+    } catch (error) {
+      setApiError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
       <MainNavbar />
+
       <div className="min-h-screen bg-white flex flex-col">
-        {/* MAIN CARD */}
-        <div className="flex justify-center py-6 md:py-10 px-4">
-          <div className="w-full max-w-6xl bg-white rounded-2xl md:rounded-3xl shadow-xl flex flex-col md:flex-row overflow-hidden">
-            {/* LEFT SIDE (FORM) */}
-            <div className="w-full md:w-1/2 p-5 md:p-12">
-              <h2 className="text-[#0F6B75] text-2xl md:text-3xl font-extrabold mb-2">
-                Create a new account
+        <div className="flex justify-center py-10 px-4">
+          <div className="w-full max-w-5xl bg-white rounded-3xl shadow-xl flex overflow-hidden">
+
+            {/* LEFT FORM */}
+            <div className="w-full md:w-1/2 p-8 md:p-12">
+              <h2 className="text-3xl font-extrabold text-[#0F6B75] mb-2">
+                Teacher Registration
               </h2>
-              <p className="text-gray-500 mb-6">Join us to start your journey</p>
+              <p className="text-gray-500 mb-6">
+                Create your teacher account
+              </p>
 
-              {/* Role Toggle */}
-              <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
-                <button 
-                  onClick={() => navigate("/signup-student")}
-                  className="flex-1 py-2 rounded-lg font-bold text-sm transition-all cursor-pointer text-gray-500 hover:text-gray-700"
-                >
-                  Student
-                </button>
-                <button 
-                  className="flex-1 py-2 rounded-lg font-bold text-sm transition-all cursor-pointer bg-white text-[#0F6B75] shadow-sm"
-                >
-                  Teacher
-                </button>
-              </div>
+              {apiError && (
+                <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg mb-4">
+                  {apiError}
+                </div>
+              )}
 
-              <form className="flex flex-col gap-4" onSubmit={handleSignup}>
-                {/* Standard Fields */}
-                <h3 className="text-xl font-bold text-gray-800 border-b pb-2 mb-2">Account Details</h3>
+              <form onSubmit={handleSignup} className="flex flex-col gap-4">
+
+                <h3 className="text-lg font-bold border-b pb-2">
+                  Account Details
+                </h3>
+
                 <div>
-                    <label className="text-gray-700 font-bold block mb-1">Full Name *</label>
-                    <input
+                  <label className="font-semibold">Name *</label>
+                  <input
                     type="text"
-                    name="fullName"
-                    value={formData.fullName}
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
-                    className={`w-full border ${errors.fullName ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-[#0F6B75]/50 rounded-lg px-4 py-3 outline-none`}
-                    />
-                    {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
+                    className={`w-full border ${
+                      errors.name ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-4 py-3`}
+                  />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm">{errors.name}</p>
+                  )}
                 </div>
 
                 <div>
-                    <label className="text-gray-700 font-bold block mb-1">Email Address *</label>
-                    <input
+                  <label className="font-semibold">Email *</label>
+                  <input
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleChange}
-                    className={`w-full border ${errors.email ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-[#0F6B75]/50 rounded-lg px-4 py-3 outline-none`}
-                    />
-                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                    readOnly={!!sanitizedEmail}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-gray-100 cursor-not-allowed"
+                  />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="text-gray-700 font-bold block mb-1">Password *</label>
-                        <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className={`w-full border ${errors.password ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-[#0F6B75]/50 rounded-lg px-4 py-3 outline-none`}
-                        />
-                        {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
-                    </div>
-                    <div>
-                        <label className="text-gray-700 font-bold block mb-1">Confirm Password *</label>
-                        <input
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className={`w-full border ${errors.confirmPassword ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-[#0F6B75]/50 rounded-lg px-4 py-3 outline-none`}
-                        />
-                        {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
-                    </div>
-                </div>
-
-                {/* Personal Details (Optional) */}
-                <h3 className="text-xl font-bold text-gray-800 border-b pb-2 mb-2 mt-4">Personal Details (Optional)</h3>
                 <div>
-                    <label className="text-gray-700 font-bold block mb-1">Profile Picture</label>
-                    <input
-                    type="file"
-                    name="profilePicture"
+                  <label className="font-semibold">Password *</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
                     onChange={handleChange}
-                    accept="image/*"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    />
+                    className={`w-full border ${
+                      errors.password ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-4 py-3`}
+                  />
+                  {errors.password && (
+                    <p className="text-red-500 text-sm">{errors.password}</p>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="text-gray-700 font-bold block mb-1">Gender</label>
-                        <select
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 focus:ring-2 focus:ring-[#0F6B75]/50 rounded-lg px-4 py-3 outline-none bg-white"
-                        >
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="text-gray-700 font-bold block mb-1">Date of Birth</label>
-                        <input
-                            type="date"
-                            name="dob"
-                            value={formData.dob}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 focus:ring-2 focus:ring-[#0F6B75]/50 rounded-lg px-4 py-3 outline-none"
-                        />
-                    </div>
-                </div>
+                <h3 className="text-lg font-bold border-b pb-2 mt-4">
+                  Professional Details
+                </h3>
 
-                {/* Professional Details */}
-                <h3 className="text-xl font-bold text-gray-800 border-b pb-2 mb-2 mt-4">Professional Details</h3>
                 <div>
-                    <label className="text-gray-700 font-bold block mb-1">Faculty ID *</label>
-                    <input
+                  <label className="font-semibold">Phone</label>
+                  <input
                     type="text"
-                    name="facultyId"
-                    value={formData.facultyId}
+                    name="phone"
+                    value={formData.phone}
                     onChange={handleChange}
-                    className={`w-full border ${errors.facultyId ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-[#0F6B75]/50 rounded-lg px-4 py-3 outline-none`}
-                    />
-                    {errors.facultyId && <p className="text-red-500 text-sm mt-1">{errors.facultyId}</p>}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3"
+                  />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="text-gray-700 font-bold block mb-1">Department *</label>
-                        <input
-                        type="text"
-                        name="department"
-                        value={formData.department}
-                        onChange={handleChange}
-                        placeholder="e.g. Computer Science"
-                        className={`w-full border ${errors.department ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-[#0F6B75]/50 rounded-lg px-4 py-3 outline-none`}
-                        />
-                        {errors.department && <p className="text-red-500 text-sm mt-1">{errors.department}</p>}
-                    </div>
-                    <div>
-                        <label className="text-gray-700 font-bold block mb-1">Role / Designation *</label>
-                        <input
-                        type="text"
-                        name="role"
-                        value={formData.role}
-                        onChange={handleChange}
-                        placeholder="e.g. Lecturer, Professor"
-                        className={`w-full border ${errors.role ? "border-red-500" : "border-gray-300"} focus:ring-2 focus:ring-[#0F6B75]/50 rounded-lg px-4 py-3 outline-none`}
-                        />
-                        {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role}</p>}
-                    </div>
+                <div>
+                  <label className="font-semibold">Qualification</label>
+                  <input
+                    type="text"
+                    name="qualification"
+                    value={formData.qualification}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-semibold">Experience</label>
+                  <input
+                    type="text"
+                    name="experience"
+                    value={formData.experience}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3"
+                  />
                 </div>
 
                 <button
-                    type="submit"
-                    className="bg-[#0F6B75] text-white rounded-xl py-3 font-medium shadow-md w-full mt-6 hover:bg-[#0F5F6A] transition-colors cursor-pointer"
+                  type="submit"
+                  disabled={loading}
+                  className="bg-[#0F6B75] text-white rounded-xl py-3 font-medium mt-6 hover:bg-[#0F5F6A] disabled:opacity-50"
                 >
-                    Create Teacher Account
+                  {loading ? "Creating Account..." : "Create Teacher Account"}
                 </button>
               </form>
 
-              <div className="flex justify-center items-center lg:flex lg:justify-center lg:items-center mt-6">
-                <p className="text-sm text-gray-600">
-                  Already have an account?{" "}
-                  <span
-                    className="text-[#0F6B75] font-semibold cursor-pointer"
-                    onClick={() => navigate("/login")}
-                  >
-                    Log in
-                  </span>
-                </p>
-              </div>
+              <p className="text-center text-sm text-gray-600 mt-6">
+                Already have an account?{" "}
+                <span
+                  className="text-[#0F6B75] font-semibold cursor-pointer"
+                  onClick={() => navigate("/login")}
+                >
+                  Log in
+                </span>
+              </p>
             </div>
 
-            {/* RIGHT SIDE IMAGE */}
+            {/* RIGHT IMAGE */}
             <div className="hidden md:flex w-1/2 bg-[#f0f9fa] items-center justify-center p-8">
-              <img src="/amico.png" alt="amico" className="max-w-full h-auto" />
+              <img src="/amico.png" alt="Teacher" className="max-w-full h-auto" />
             </div>
           </div>
         </div>
 
-        {/* FOOTER */}
         <Footer />
       </div>
     </>
