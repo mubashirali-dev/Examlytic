@@ -13,6 +13,7 @@ import TeacherResult from "./Pages/TeacherResult.jsx";
 import StudentResult from "./Pages/StudentResult.jsx";
 import Admin from "./Admin.jsx";
 import StudentAdmin from "./components/StudentAdmin.jsx";
+import ClassManager from "./components/ClassManager.jsx";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         {/* Signup Routes */}
         <Route path="/signup-teacher" element={<TeacherSignUp />} />
         <Route path="/signup-student" element={<StudentSignUp />} />
+        <Route path="/admin-classes" element={<ClassManager />} />
         {/* Redirect /signup to /signup-teacher by default or as requested */}
         <Route path="/signup" element={<Navigate to="/signup-teacher" replace />} />
         <Route path="/admin" element={<Admin />} />
@@ -35,6 +37,7 @@ export default function App() {
           <Route path="/teacher-reports" element={<TeacherReport />} />
           <Route path="/inviteStudent" element={<StudentAdmin />} />
           <Route path="/teacher-results" element={<TeacherResult />} />
+
         </Route>
 
         {/* Student Routes Layout */}
