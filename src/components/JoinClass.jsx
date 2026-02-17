@@ -1,28 +1,56 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 
-const JoinClass = ({ isOpen, onClose, onJoin }) => {
+const JoinClass = ({ isOpen, onClose, onSuccess }) => {
   const [classCode, setClassCode] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!classCode.trim()) {
       setError("Class code is required");
       return;
     }
 
-    // In a real app, validation of code would happen here
-    if (onJoin) {
-      onJoin(classCode);
-    }
+    try {
+      setLoading(true);
+      setError("");
 
-    // Reset and close
-    setClassCode("");
-    setError("");
-    onClose();
+      const token = localStorage.getItem("accessToken");
+
+      const response = await fetch(
+        `http://localhost:5000/api/enrollment/request`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            classCode: classCode.trim().toUpperCase(),
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      // Success
+      setClassCode("");
+      if (onSuccess) onSuccess(data);
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,6 +59,7 @@ const JoinClass = ({ isOpen, onClose, onJoin }) => {
         {/* Close Button */}
         <button
           onClick={onClose}
+          disabled={loading}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
         >
           <X size={24} />
@@ -52,7 +81,8 @@ const JoinClass = ({ isOpen, onClose, onJoin }) => {
                 setClassCode(e.target.value);
                 if (error) setError("");
               }}
-              placeholder="Enter class code (e.g. xyz-123)"
+              placeholder="Enter class code (e.g. XYZ-123)"
+              disabled={loading}
               className={`w-full px-4 py-2 rounded-lg border ${
                 error ? "border-red-500" : "border-gray-300"
               } focus:outline-none focus:ring-2 focus:ring-[#0F6B75]/50 text-gray-700`}
@@ -63,9 +93,10 @@ const JoinClass = ({ isOpen, onClose, onJoin }) => {
           <div className="pt-4 flex justify-center">
             <button
               type="submit"
-              className="bg-[#0F6B75] text-white px-8 py-2 rounded-lg font-bold hover:bg-[#0c565e] transition-colors shadow-md w-full sm:w-auto"
+              disabled={loading}
+              className="bg-[#0F6B75] text-white px-8 py-2 rounded-lg font-bold hover:bg-[#0c565e] transition-colors shadow-md w-full sm:w-auto disabled:opacity-50"
             >
-              Join
+              {loading ? "Sending Request..." : "Join"}
             </button>
           </div>
         </form>

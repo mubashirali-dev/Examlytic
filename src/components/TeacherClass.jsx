@@ -60,7 +60,7 @@ const TeacherClass = ({ classData, onUpdate }) => {
         {activeTab === "Overview" && (
           <TeacherClassOverview classData={classData} />
         )}
-        {activeTab === "Students" && <TeacherClassStudents />}
+        {activeTab === "Students" && <TeacherClassStudents classId={classData._id}/>}
         {activeTab === "Exams" && <TeacherClassExam />}
         {activeTab === "Material" && <Material role="Teacher" />}
       </div>

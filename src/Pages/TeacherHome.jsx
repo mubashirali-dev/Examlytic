@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import axios from "axios";
 import MyClass from "../components/MyClass";
 import QuickAction from "../components/QuickAction";
 import TeacherClass from "../components/TeacherClass";
@@ -8,86 +9,131 @@ const TeacherHome = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const classId = searchParams.get("classId");
 
-  // Initial Class Data
-  const [classes, setClasses] = useState([
-    {
-      id: 1,
-      title: "Entrepreneurship",
-      section: "BSCS 7A MOR",
-      description: "Introduction to Entrepreneurship and Business Development.",
-      image: "/class.png",
-    },
-    {
-      id: 2,
-      title: "Entrepreneurship",
-      section: "BSCS 7A MOR",
-      description: "Introduction to Entrepreneurship and Business Development.",
-      image: "/class.png",
-    },
-    {
-      id: 3,
-      title: "Entrepreneurship",
-      section: "BSCS 7A MOR",
-      description: "Introduction to Entrepreneurship and Business Development.",
-      image: "/class.png",
-    },
-    {
-      id: 4,
-      title: "Entrepreneurship",
-      section: "BSCS 7A MOR",
-      description: "Introduction to Entrepreneurship and Business Development.",
-      image: "/class.png",
-    },
-    {
-      id: 5,
-      title: "Entrepreneurship",
-      section: "BSCS 7A MOR",
-      description: "Introduction to Entrepreneurship and Business Development.",
-      image: "/class.png",
-    },
-  ]);
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 🔥 Fetch classes on load
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+          throw new Error("Authentication token not found. Please login again.");
+        }
+
+        const response = await axios.get(
+          "http://localhost:5000/api/class/my-classes",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setClasses(response.data.data || []);
+      } catch (err) {
+        console.error("Fetch classes error:", err);
+
+        if (err.response) {
+          // Server responded with error
+          setError(
+            err.response.data.message ||
+              "Unable to load your classes at the moment."
+          );
+        } else if (err.request) {
+          // No response
+          setError(
+            "Server is not responding. Please check your internet connection."
+          );
+        } else {
+          // Something else
+          setError(err.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClasses();
+  }, []);
 
   const selectedClass = classId
-    ? classes.find((c) => c.id === Number(classId))
+    ? classes.find((c) => c._id === classId)
     : null;
 
-  const handleAddClass = (newClassData) => {
-    const newClass = {
-      id: Date.now(), // Simple unique ID
-      title: newClassData.name,
-      section: newClassData.section,
-      description: newClassData.description, // Added description
-      image: "/class.png", // Default image
-    };
+  const handleAddClass = (newClass) => {
     setClasses((prev) => [...prev, newClass]);
   };
 
   const handleUpdateClass = (updatedClass) => {
     setClasses((prev) =>
-      prev.map((c) => (c.id === updatedClass.id ? updatedClass : c)),
+      prev.map((c) => (c._id === updatedClass._id ? updatedClass : c))
     );
-    // URL param stays same, just content updates
   };
 
   const handleDeleteClass = (id) => {
-    setClasses((prev) => prev.filter((c) => c.id !== id));
-    // If the deleted class was selected (visible), return to home
-    if (selectedClass && selectedClass.id === id) {
+    setClasses((prev) => prev.filter((c) => c._id !== id));
+
+    if (selectedClass && selectedClass._id === id) {
       setSearchParams({});
     }
   };
 
+  // 🔵 Loading State
+  if (loading) {
+    return (
+      <div className="text-center mt-10 text-gray-600">
+        Loading your classes...
+      </div>
+    );
+  }
+
+  // 🔴 Error State
+  if (error) {
+    return (
+      <div className="text-center mt-10 text-red-600">
+        <h3 className="text-lg font-semibold">Something went wrong</h3>
+        <p className="mt-2">{error}</p>
+      </div>
+    );
+  }
+
+  // 🟡 No Classes State
+  if (!classes.length) {
+    return (
+      <div className="text-center mt-16">
+        <h2 className="text-xl font-semibold text-gray-800">
+          No Classes Assigned Yet
+        </h2>
+        <p className="text-gray-500 mt-3">
+          You currently do not have any classes assigned to your profile.
+          Once a class is assigned, it will appear here.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       {selectedClass ? (
-        <TeacherClass classData={selectedClass} onUpdate={handleUpdateClass} />
+        <TeacherClass
+          classData={selectedClass}
+          onUpdate={handleUpdateClass}
+        />
       ) : (
         <>
           <MyClass
             classes={classes}
             onDeleteClass={handleDeleteClass}
             onCreateClass={handleAddClass}
-            onViewClass={(cls) => setSearchParams({ classId: cls.id })}
+            onViewClass={(cls) =>
+              setSearchParams({ classId: cls._id })
+            }
           />
           <QuickAction onCreateClass={handleAddClass} />
         </>

@@ -278,7 +278,7 @@ export default function ClassManager() {
                 </option>
 
                 {teachers.map((t) => (
-                  <option key={t._id} value={t._id}>
+                  <option key={t.userId} value={t.userId}>
                     {t.name}
                   </option>
                 ))}
