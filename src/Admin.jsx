@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { UserPlus, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
   const [open, setOpen] = useState(false);
@@ -11,6 +12,7 @@ const Admin = () => {
 
   const [teachers, setTeachers] = useState([]);
   const [fetchingTeachers, setFetchingTeachers] = useState(false);
+  const navigate = useNavigate();
 
   // ---------------- Email Validation ----------------
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -87,6 +89,9 @@ const Admin = () => {
         {/* ================= Sidebar ================= */}
         <div className="w-14 sm:w-16 bg-[#0F6B75] flex justify-center items-start pt-6 cursor-pointer">
           <UserPlus className="text-white" size={20} />
+        </div>
+        <div className="w-14 sm:w-16 bg-[#0F6B75] flex justify-center items-start pt-6 cursor-pointer">
+          <UserPlus   onClick={() => navigate('/admin-classes')} className="text-white" size={20} />
         </div>
 
         {/* ================= Main ================= */}

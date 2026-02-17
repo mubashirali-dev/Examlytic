@@ -1,3 +1,4 @@
+// LoginPage.jsx
 import React, { useState, useEffect } from "react";
 import MainNavbar from "../components/MainNavbar";
 import Footer from "../components/Footer";
@@ -12,25 +13,18 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    role: "student", // default role
   });
 
   const [errors, setErrors] = useState({});
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  /* =========================
-     AUTO LOGIN & REMEMBER ME
-     ========================= */
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const user = JSON.parse(localStorage.getItem("currentUser"));
-
     if (token && user) {
-      if (user.role === "teacher") {
-        navigate("/teacher-home", { replace: true });
-      } else {
-        navigate("/student-home", { replace: true });
-      }
+      navigate(user.role === "teacher" ? "/teacher-home" : "/student-home", { replace: true });
     }
 
     const savedEmail = localStorage.getItem("rememberedEmail");
@@ -40,44 +34,26 @@ export default function LoginPage() {
     }
   }, [navigate]);
 
-  /* =========================
-     INPUT HANDLER
-     ========================= */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  /* =========================
-     FORM VALIDATION
-     ========================= */
   const validateForm = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Invalid email format";
-    }
+    if (!formData.email) newErrors.email = "Email is required";
+    else if (!emailRegex.test(formData.email)) newErrors.email = "Invalid email format";
 
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-    }
+    if (!formData.password) newErrors.password = "Password is required";
+    else if (formData.password.length < 8) newErrors.password = "Password must be at least 8 characters";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  /* =========================
-     LOGIN API CALL
-     ========================= */
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -86,42 +62,24 @@ export default function LoginPage() {
     setErrors({});
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/teacher/login`,
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      );
+      const response = await axios.post(`${API_BASE_URL}/teacher/login`, {
+        email: formData.email,
+        password: formData.password,
+        role: formData.role, // send role to backend
+      });
 
       const { accessToken, refreshToken, user } = response.data;
 
-      // Save tokens
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("currentUser", JSON.stringify(user));
 
-      // Remember email
-      if (rememberMe) {
-        localStorage.setItem("rememberedEmail", formData.email);
-      } else {
-        localStorage.removeItem("rememberedEmail");
-      }
+      if (rememberMe) localStorage.setItem("rememberedEmail", formData.email);
+      else localStorage.removeItem("rememberedEmail");
 
-      // Redirect
-      if (user.role === "teacher") {
-        navigate("/teacher-home", { replace: true });
-      } else {
-        navigate("/student-home", { replace: true });
-      }
+      navigate(user.role === "teacher" ? "/teacher-home" : "/student-home", { replace: true });
     } catch (error) {
-      console.error("Login error:", error);
-
-      setErrors({
-        email:
-          error?.response?.data?.message ||
-          "Invalid email or password",
-      });
+      setErrors({ email: error?.response?.data?.message || "Invalid email or password" });
     } finally {
       setLoading(false);
     }
@@ -133,90 +91,73 @@ export default function LoginPage() {
       <div className="min-h-screen bg-white flex flex-col">
         <div className="flex justify-center py-10 px-4">
           <div className="w-full max-w-6xl bg-white rounded-3xl shadow-xl flex flex-col md:flex-row overflow-hidden">
-            {/* LEFT SIDE */}
             <div className="w-full md:w-1/2 p-6 md:p-12">
               <h2 className="text-[#0F6B75] text-2xl md:text-3xl font-bold mb-6">
                 Sign in to your account
               </h2>
 
               <form className="flex flex-col gap-4" onSubmit={handleLogin}>
+                {/* ROLE SELECTOR */}
+                <div>
+                  <label className="font-semibold text-gray-700 mb-1 block">Login as</label>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#0F6B75]/50"
+                  >
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                  </select>
+                </div>
+
                 {/* EMAIL */}
                 <div>
-                  <label className="font-semibold text-gray-700 mb-1 block">
-                    Email Address
-                  </label>
+                  <label className="font-semibold text-gray-700 mb-1 block">Email Address</label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full border ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    } rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#0F6B75]/50`}
+                    className={`w-full border ${errors.email ? "border-red-500" : "border-gray-300"} rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#0F6B75]/50`}
                   />
-                  {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.email}
-                    </p>
-                  )}
+                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
 
                 {/* PASSWORD */}
                 <div>
-                  <label className="font-semibold text-gray-700 mb-1 block">
-                    Password
-                  </label>
+                  <label className="font-semibold text-gray-700 mb-1 block">Password</label>
                   <input
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full border ${
-                      errors.password ? "border-red-500" : "border-gray-300"
-                    } rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#0F6B75]/50`}
+                    className={`w-full border ${errors.password ? "border-red-500" : "border-gray-300"} rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#0F6B75]/50`}
                   />
-                  {errors.password && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.password}
-                    </p>
-                  )}
+                  {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                 </div>
 
                 {/* REMEMBER ME */}
                 <div className="flex justify-between text-sm text-gray-600">
                   <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                    />
+                    <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
                     Remember Me
                   </label>
                 </div>
 
-                {/* BUTTON */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="mt-6 bg-[#0F6B75] hover:bg-[#0F6B80] text-white rounded-lg py-3 font-medium transition"
-                >
+                <button type="submit" disabled={loading} className="mt-6 bg-[#0F6B75] hover:bg-[#0F6B80] text-white rounded-lg py-3 font-medium transition">
                   {loading ? "Logging in..." : "Login"}
                 </button>
 
-                {/* SIGNUP */}
                 <p className="text-sm text-center text-gray-600 mt-4">
                   Don’t have an account?{" "}
-                  <span
-                    className="text-[#0F6B75] font-semibold cursor-pointer"
-                    onClick={() => navigate("/signup")}
-                  >
+                  <span className="text-[#0F6B75] font-semibold cursor-pointer" onClick={() => navigate("/signup")}>
                     Signup here
                   </span>
                 </p>
               </form>
             </div>
 
-            {/* RIGHT SIDE */}
             <div className="hidden md:flex w-1/2 items-center justify-center p-8">
               <img src="/amico.png" alt="Login Illustration" />
             </div>
