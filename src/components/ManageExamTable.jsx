@@ -1,6 +1,6 @@
 import { Eye, Edit2, Trash2 } from "lucide-react";
 
-const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
+const ManageExamTable = ({ exams, onView, onEdit, onDelete, onToggleActive }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case "Published":
@@ -84,6 +84,14 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
                   >
                     <Trash2 size={18} />
                   </button>
+                  {onToggleActive && (
+                    <button
+                      onClick={() => onToggleActive(exam)}
+                      className="text-xs font-semibold px-2 py-1 rounded-full border border-gray-300 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {exam.isActive ? "Deactivate" : "Activate"}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -151,6 +159,14 @@ const ManageExamTable = ({ exams, onView, onEdit, onDelete }) => {
                       >
                         <Trash2 size={18} />
                       </button>
+                      {onToggleActive && (
+                        <button
+                          onClick={() => onToggleActive(exam)}
+                          className="text-xs font-semibold px-2 py-1 rounded-full border border-gray-300 hover:bg-gray-100 cursor-pointer"
+                        >
+                          {exam.isActive ? "Deactivate" : "Activate"}
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

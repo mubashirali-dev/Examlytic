@@ -42,10 +42,9 @@ const TeacherClass = ({ classData, onUpdate }) => {
               onClick={() => setActiveTab(tab)}
               className={`
                 py-4 px-1 border-b-2 font-medium text-sm transition-colors cursor-pointer
-                ${
-                  activeTab === tab
-                    ? "border-[#0F6B75] text-[#0F6B75]"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ${activeTab === tab
+                  ? "border-[#0F6B75] text-[#0F6B75]"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }
               `}
             >
@@ -60,8 +59,10 @@ const TeacherClass = ({ classData, onUpdate }) => {
         {activeTab === "Overview" && (
           <TeacherClassOverview classData={classData} />
         )}
-        {activeTab === "Students" && <TeacherClassStudents classId={classData._id}/>}
-        {activeTab === "Exams" && <TeacherClassExam />}
+        {activeTab === "Students" && <TeacherClassStudents classId={classData._id} />}
+        {activeTab === "Exams" && (
+          <TeacherClassExam classId={classData._id} />
+        )}
         {activeTab === "Material" && <Material role="Teacher" />}
       </div>
 

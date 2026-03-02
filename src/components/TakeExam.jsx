@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { Clock, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+
+const API_BASE_URL = "http://localhost:5000/api";
 
 const TakeExam = ({ exam, onFinish }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -7,17 +10,60 @@ const TakeExam = ({ exam, onFinish }) => {
   const [timeLeft, setTimeLeft] = useState(exam.duration * 60); // seconds
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    // Calculate Mock Score
-    let calculatedScore = 0;
-    exam.questionsList.forEach((q) => {
-      if (answers[q.id] === q.correctOption) {
-        calculatedScore += q.marks;
+  const handleSubmit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+
+    try {
+      const mcqAnswers = exam.questionsList
+        .map((q, index) => ({
+          questionIndex: index,
+          selectedOptionIndex:
+            answers[q.id] !== undefined ? answers[q.id] : null,
+        }))
+        .filter((a) => a.selectedOptionIndex !== null);
+
+      const payload = {
+        mcqAnswers,
+        shortAnswers: [],
+      };
+
+      if (exam.attemptId) {
+        const res = await axios.post(
+          `${API_BASE_URL}/student-exams/attempt/${exam.attemptId}/submit`,
+          payload,
+        );
+        const apiScore = res.data?.score;
+        if (typeof apiScore === "number") {
+          setScore(apiScore);
+        } else {
+          let calculatedScore = 0;
+          exam.questionsList.forEach((q, idx) => {
+            if (answers[q.id] === q.correctOption) {
+              calculatedScore += q.marks;
+            }
+          });
+          setScore(calculatedScore);
+        }
+      } else {
+
+        let calculatedScore = 0;
+        exam.questionsList.forEach((q) => {
+          if (answers[q.id] === q.correctOption) {
+            calculatedScore += q.marks;
+          }
+        });
+        setScore(calculatedScore);
       }
-    });
-    setScore(calculatedScore);
-    setIsSubmitted(true);
+
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error("Failed to submit exam:", err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Mock Timer
@@ -95,11 +141,10 @@ const TakeExam = ({ exam, onFinish }) => {
           <p className="text-sm text-gray-500">{exam.subject}</p>
         </div>
         <div
-          className={`flex items-center gap-2 font-mono text-xl font-bold px-4 py-2 rounded-lg ${
-            timeLeft < 300
+          className={`flex items-center gap-2 font-mono text-xl font-bold px-4 py-2 rounded-lg ${timeLeft < 300
               ? "bg-red-50 text-red-600"
               : "bg-teal-50 text-[#0F6B75]"
-          }`}
+            }`}
         >
           <Clock size={20} />
           {formatTime(timeLeft)}
@@ -129,18 +174,16 @@ const TakeExam = ({ exam, onFinish }) => {
                 <button
                   key={idx}
                   onClick={() => handleOptionSelect(currentQuestion.id, idx)}
-                  className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-3 group ${
-                    answers[currentQuestion.id] === idx
+                  className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-3 group ${answers[currentQuestion.id] === idx
                       ? "border-[#0F6B75] bg-teal-50 text-[#0F6B75]"
                       : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   <div
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                      answers[currentQuestion.id] === idx
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${answers[currentQuestion.id] === idx
                         ? "border-[#0F6B75] bg-[#0F6B75]"
                         : "border-gray-300 group-hover:border-gray-400"
-                    }`}
+                      }`}
                   >
                     {answers[currentQuestion.id] === idx && (
                       <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
@@ -197,13 +240,12 @@ const TakeExam = ({ exam, onFinish }) => {
               <button
                 key={idx}
                 onClick={() => setCurrentQuestionIndex(idx)}
-                className={`w-10 h-10 rounded-lg font-bold text-sm transition-all ${
-                  currentQuestionIndex === idx
+                className={`w-10 h-10 rounded-lg font-bold text-sm transition-all ${currentQuestionIndex === idx
                     ? "ring-2 ring-[#0F6B75] ring-offset-2 bg-[#0F6B75] text-white"
                     : answers[q.id] !== undefined
                       ? "bg-teal-100 text-teal-800"
                       : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 {idx + 1}
               </button>

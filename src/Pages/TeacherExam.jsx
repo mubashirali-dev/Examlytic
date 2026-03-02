@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import ManageExamTable from "../components/ManageExamTable";
 import DropDownMenu from "../components/DropDownMenu";
 import CreateExam from "../components/CreateExam";
@@ -6,6 +7,8 @@ import ViewExam from "../components/ViewExam";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
+const API_BASE_URL = "http://localhost:5000/api";
 
 const TeacherExam = () => {
   const navigate = useNavigate();
@@ -19,61 +22,85 @@ const TeacherExam = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedExam, setSelectedExam] = useState(null);
 
-  // Mock Data (State)
-  const [exams, setExams] = useState([
-    {
-      id: 1,
-      title: "Midterm Physics",
-      subject: "Physics",
-      class: "BSCS 7A",
-      questions: 25,
-      questionsList: [], // Added for compatibility
-      status: "Published",
-      date: "Oct 24, 2024, 10:00 AM",
-      startTime: "10:00",
-      endTime: "12:00",
-      duration: 120,
-    },
-    {
-      id: 2,
-      title: "Final Math",
-      subject: "Math",
-      class: "BSCS 7B",
-      questions: 40,
-      questionsList: [],
-      status: "Scheduled",
-      date: "Dec 10, 2024, 09:00 AM",
-      startTime: "09:00",
-      endTime: "11:00",
-      duration: 120,
-    },
-    {
-      id: 3,
-      title: "Quiz 1 Chemistry",
-      subject: "Chemistry",
-      class: "BSCS 7A",
-      questions: 10,
-      questionsList: [],
-      status: "Completed",
-      date: "Sep 15, 2024, 11:30 AM",
-      startTime: "11:30",
-      endTime: "12:30",
-      duration: 60,
-    },
-    {
-      id: 4,
-      title: "Programming Basics",
-      subject: "CS",
-      class: "BSSE 2A",
-      questions: 15,
-      questionsList: [],
-      status: "Draft",
-      date: "Nov 05, 2024, 02:00 PM",
-      startTime: "14:00",
-      endTime: "15:00",
-      duration: 60,
-    },
-  ]);
+  // Exams loaded from API
+  const [exams, setExams] = useState([]);
+
+  const fetchExams = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/exams`);
+      const apiExams = res.data?.data || [];
+
+      const mapped = apiExams.map((exam) => {
+        const start = exam.startTime ? new Date(exam.startTime) : null;
+
+        const formattedDate = start
+          ? start.toLocaleString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+          : "TBD";
+
+        const mcqCount = Array.isArray(exam.mcqQuestions)
+          ? exam.mcqQuestions.length
+          : 0;
+        const shortCount = Array.isArray(exam.shortQuestions)
+          ? exam.shortQuestions.length
+          : 0;
+
+        const questionsList = [
+          ...(exam.mcqQuestions || []).map((q, idx) => ({
+            id: `mcq-${idx}`,
+            type: "mcq",
+            text: q.question,
+            marks: q.marks,
+            options: q.options,
+            correctOption: q.correctOptionIndex,
+          })),
+          ...(exam.shortQuestions || []).map((q, idx) => ({
+            id: `short-${idx}`,
+            type: "subjective",
+            text: q.question,
+            marks: q.marks,
+            options: [],
+          })),
+        ];
+
+        const computedTotal =
+          exam.totalMarks ??
+          questionsList.reduce((sum, q) => sum + (q.marks || 0), 0);
+
+        return {
+          id: exam._id,
+          title: exam.title,
+          subject: "", // no subject in backend model
+          class: "", // no class name, only classId
+          questions: mcqCount + shortCount,
+          questionsList,
+          totalMarks: computedTotal,
+          status:
+            exam.status === "published"
+              ? "Published"
+              : exam.status === "completed"
+                ? "Completed"
+                : "Draft",
+          date: formattedDate,
+          duration: exam.durationMinutes || 0,
+        };
+      });
+
+      setExams(mapped);
+    } catch (err) {
+      console.error("Failed to fetch exams:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchExams();
+  }, []);
 
   // Derive unique options for filters
   const subjects = ["All Subjects", ...new Set(exams.map((e) => e.subject))];
@@ -118,13 +145,61 @@ const TeacherExam = () => {
     setSelectedExam(null);
   };
 
-  const handleSaveExam = (updatedExam) => {
-    // Update existing exam
-    const formattedDate = updatedExam.date;
+  const handleSaveExam = async (updatedExam) => {
+    try {
+      const mcqQuestions =
+        (updatedExam.questions || [])
+          .filter((q) => q.type === "mcq")
+          .map((q) => ({
+            question: q.text,
+            options: q.options,
+            correctOptionIndex: q.correctOption,
+            marks: Number(q.marks),
+          })) || [];
 
-    setExams((prev) =>
-      prev.map((e) => (e.id === updatedExam.id ? { ...e, ...updatedExam } : e)),
-    );
+      const startTimeIso =
+        updatedExam.date && updatedExam.startTime
+          ? new Date(
+              `${updatedExam.date}T${updatedExam.startTime}:00`,
+            ).toISOString()
+          : undefined;
+
+      const endTimeIso =
+        updatedExam.date && updatedExam.endTime
+          ? new Date(
+              `${updatedExam.date}T${updatedExam.endTime}:00`,
+            ).toISOString()
+          : undefined;
+
+      const payload = {
+        title: updatedExam.title,
+        description: "",
+        passingMarks: Number(updatedExam.passingMarks || 0),
+        totalMarks:
+          typeof updatedExam.totalMarks === "number"
+            ? updatedExam.totalMarks
+            : mcqQuestions.reduce((sum, q) => sum + (q.marks || 0), 0),
+        mcqQuestions,
+        randomizeQuestions: Boolean(updatedExam.randomize),
+        ...(startTimeIso && { startTime: startTimeIso }),
+        ...(endTimeIso && { endTime: endTimeIso }),
+        durationMinutes: Number(updatedExam.duration || 0),
+        status:
+          updatedExam.status === "Published"
+            ? "published"
+            : updatedExam.status === "Completed"
+              ? "completed"
+              : "draft",
+      };
+
+      await axios.put(`${API_BASE_URL}/exams/${updatedExam.id}`, payload);
+
+      // Refresh list from API so UI stays in sync
+      await fetchExams();
+    } catch (err) {
+      console.error("Failed to update exam:", err);
+    }
+
     setIsEditMode(false);
     setSelectedExam(null);
   };
