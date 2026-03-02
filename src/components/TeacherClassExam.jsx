@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { PlusCircle, ChevronDown } from "lucide-react";
 import ManageExamTable from "./ManageExamTable";
 import CreateExam from "./CreateExam";
@@ -6,7 +7,9 @@ import ConfirmationModal from "./ConfirmationModal";
 import ViewExam from "./ViewExam";
 import DropDownMenu from "./DropDownMenu";
 
-const TeacherClassExam = () => {
+const API_BASE_URL = "http://localhost:5000/api";
+
+const TeacherClassExam = ({ classId }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [editingExam, setEditingExam] = useState(null);
   const [viewingExam, setViewingExam] = useState(null);
@@ -19,104 +22,155 @@ const TeacherClassExam = () => {
   const [filterStatus, setFilterStatus] = useState("All Statuses");
   const [sortBy, setSortBy] = useState("Date");
 
-  const [exams, setExams] = useState([
-    {
-      id: 1,
-      title: "Calculus Midterm",
-      subject: "Mathematics",
-      questions: 2,
-      status: "Published",
-      date: "Nov 26, 2025, 10:00 AM",
-      duration: 60,
-      passingMarks: 40,
-      randomize: true,
-      questionsList: [
-        {
-          id: 101,
-          type: "mcq",
-          text: "What is the derivative of x^2?",
-          marks: 5,
-          options: ["x", "2x", "2", "x^2"],
-          correctOption: 1,
-        },
-        {
-          id: 102,
-          type: "mcq",
-          text: "Which of the following is an irrational number?",
-          marks: 5,
-          options: ["5", "3.14", "Pi (π)", "0"],
-          correctOption: 2,
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: "Physics Quiz 1",
-      subject: "Physics",
-      questions: 1,
-      status: "Scheduled",
-      date: "Dec 01, 2025, 09:00 AM",
-      duration: 45,
-      passingMarks: 20,
-      randomize: false,
-      questionsList: [
-        {
-          id: 201,
-          type: "subjective",
-          text: "Define Newton's Second Law of Motion.",
-          marks: 10,
-          options: [],
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "Chem Lab Safety",
-      subject: "Chemistry",
-      questions: 0,
-      status: "Published",
-      date: "Oct 15, 2025, 11:00 AM",
-      duration: 30,
-      passingMarks: 15,
-      questionsList: [],
-    },
-    {
-      id: 4,
-      title: "English Literature",
-      subject: "English",
-      questions: 1,
-      status: "Draft",
-      date: "Dec 10, 2025, 10:00 AM",
-      duration: 90,
-      passingMarks: 50,
-      questionsList: [
-        {
-          id: 401,
-          type: "mcq",
-          text: "Who wrote 'Hamlet'?",
-          marks: 2,
-          options: [
-            "Charles Dickens",
-            "William Shakespeare",
-            "Jane Austen",
-            "Mark Twain",
-          ],
-          correctOption: 1,
-        },
-      ],
-    },
-    {
-      id: 5,
-      title: "History Finals",
-      subject: "History",
-      questions: 0,
-      status: "Completed",
-      date: "Sep 20, 2025, 02:00 PM",
-      questionsList: [],
-    },
-  ]);
 
-  const handleSaveExam = (newExam) => {
+  const [exams, setExams] = useState([]);
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/exams`, {
+          params: classId ? { classId } : undefined,
+        });
+
+        const apiExams = res.data?.data || [];
+
+        const mapped = apiExams.map((exam) => {
+          const start = exam.startTime
+            ? new Date(exam.startTime)
+            : null;
+
+          const formattedDate = start
+            ? start.toLocaleString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+            : "TBD";
+
+          const mcqCount = Array.isArray(exam.mcqQuestions)
+            ? exam.mcqQuestions.length
+            : 0;
+          const shortCount = Array.isArray(exam.shortQuestions)
+            ? exam.shortQuestions.length
+            : 0;
+
+          const questionsList = [
+            ...(exam.mcqQuestions || []).map((q, idx) => ({
+              id: `mcq-${idx}`,
+              type: "mcq",
+              text: q.question,
+              marks: q.marks,
+              options: q.options,
+              correctOption: q.correctOptionIndex,
+            })),
+            ...(exam.shortQuestions || []).map((q, idx) => ({
+              id: `short-${idx}`,
+              type: "subjective",
+              text: q.question,
+              marks: q.marks,
+              options: [],
+            })),
+          ];
+
+          return {
+            id: exam._id,
+            title: exam.title,
+            subject: "", // backend doesn't have subject; optional
+            questions: mcqCount + shortCount,
+            status:
+              exam.status === "published"
+                ? "Published"
+                : exam.status === "completed"
+                  ? "Completed"
+                  : "Draft",
+            // Fallback: treat published exams as active if isActive is undefined
+            isActive:
+              typeof exam.isActive === "boolean"
+                ? exam.isActive
+                : exam.status === "published",
+            date: formattedDate,
+            duration: exam.durationMinutes || 0,
+            passingMarks: exam.passingMarks,
+            questionsList,
+          };
+        });
+
+        setExams(mapped);
+      } catch (err) {
+        console.error("Failed to fetch exams:", err);
+      }
+    };
+
+    fetchExams();
+  }, [classId]);
+
+  const handleSaveExam = async (newExam) => {
+
+    const mcqQuestions =
+      (newExam.questions || [])
+        .filter((q) => q.type === "mcq")
+        .map((q) => ({
+          question: q.text,
+          options: q.options,
+          correctOptionIndex: q.correctOption,
+          marks: Number(q.marks),
+        })) || [];
+
+    const startTimeIso =
+      newExam.date && newExam.startTime
+        ? new Date(`${newExam.date}T${newExam.startTime}:00`).toISOString()
+        : new Date().toISOString();
+
+    const endTimeIso =
+      newExam.date && newExam.endTime
+        ? new Date(`${newExam.date}T${newExam.endTime}:00`).toISOString()
+        : new Date().toISOString();
+
+    const payload = {
+      classId,
+      title: newExam.title,
+      description: "",
+      passingMarks: Number(newExam.passingMarks || 0),
+      totalMarks:
+        typeof newExam.totalMarks === "number"
+          ? newExam.totalMarks
+          : mcqQuestions.reduce((sum, q) => sum + (q.marks || 0), 0),
+      mcqQuestions,
+      shortQuestions: [],
+      randomizeQuestions: Boolean(newExam.randomize),
+      startTime: startTimeIso,
+      endTime: endTimeIso,
+      durationMinutes: Number(newExam.duration || 0),
+      status:
+        newExam.status === "Published"
+          ? "published"
+          : newExam.status === "Completed"
+            ? "completed"
+            : "draft",
+    };
+
+    let apiExam;
+    try {
+      if (editingExam && editingExam.id) {
+
+        const res = await axios.put(
+          `${API_BASE_URL}/exams/${editingExam.id}`,
+          payload,
+        );
+        apiExam = res.data?.data || null;
+      } else {
+        // Create new exam
+        const res = await axios.post(`${API_BASE_URL}/exams`, payload);
+        apiExam = res.data?.data || null;
+      }
+    } catch (err) {
+      console.error("Failed to save exam:", err);
+      return;
+    }
+
     const formatDateTime = (dateStr, timeStr) => {
       // If date already formatted (from edit without change), return as it is
       if (!dateStr || !timeStr) return "TBD";
@@ -149,10 +203,11 @@ const TeacherClassExam = () => {
 
     const formattedExam = {
       ...newExam,
-      id: editingExam ? editingExam.id : Date.now(),
-      title: newExam.title || "Untitled Exam",
+      id: apiExam?._id || (editingExam ? editingExam.id : Date.now()),
+      title: newExam.title || apiExam?.title || "Untitled Exam",
       questions: newExam.questions.length,
       status: newExam.status,
+      isActive: newExam.status === "Published",
       date:
         newExam.date && newExam.date.includes(",")
           ? newExam.date
@@ -251,14 +306,89 @@ const TeacherClassExam = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setExams(exams.filter((e) => e.id !== examToDelete.id));
-    setIsDeleteModalOpen(false);
-    setExamToDelete(null);
+  const confirmDelete = async () => {
+    if (!examToDelete) return;
+
+    try {
+      await axios.delete(`${API_BASE_URL}/exams/${examToDelete.id}`);
+      setExams(exams.filter((e) => e.id !== examToDelete.id));
+    } catch (err) {
+      console.error("Failed to delete exam:", err);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setExamToDelete(null);
+    }
   };
 
-  const handleView = (exam) => {
-    setViewingExam(exam);
+  const handleView = async (exam) => {
+    try {
+
+      const res = await axios.get(
+        `http://localhost:5000/api/exams/${exam.id}`,
+      );
+      const backendExam = res.data?.data;
+
+
+      const mcqQuestions =
+        backendExam?.mcqQuestions?.map((q, idx) => ({
+          id: `mcq-${idx}`,
+          type: "mcq",
+          text: q.question,
+          marks: q.marks,
+          options: q.options,
+          correctOption: q.correctOptionIndex,
+        })) || [];
+
+      const shortQuestions =
+        backendExam?.shortQuestions?.map((q, idx) => ({
+          id: `short-${idx}`,
+          type: "subjective",
+          text: q.question,
+          marks: q.marks,
+          options: [],
+        })) || [];
+
+      const questionsList = [...mcqQuestions, ...shortQuestions];
+
+      const viewExamData = {
+        ...exam,
+        title: backendExam?.title || exam.title,
+        questionsList,
+        questions: questionsList.length,
+        totalMarks:
+          backendExam?.totalMarks ??
+          questionsList.reduce((sum, q) => sum + (q.marks || 0), 0),
+      };
+
+      setViewingExam(viewExamData);
+    } catch (err) {
+      console.error("Failed to fetch exam details:", err);
+      setViewingExam(exam);
+    }
+  };
+
+  const handleToggleActive = async (exam) => {
+    const nextIsActive = !exam.isActive;
+
+    try {
+      await axios.patch(`${API_BASE_URL}/exams/${exam.id}/active`, {
+        isActive: nextIsActive,
+      });
+
+      setExams((prev) =>
+        prev.map((e) =>
+          e.id === exam.id
+            ? {
+              ...e,
+              isActive: nextIsActive,
+              status: nextIsActive ? "Published" : "Draft",
+            }
+            : e,
+        ),
+      );
+    } catch (err) {
+      console.error("Failed to toggle exam active state:", err);
+    }
   };
 
   // Filter & Sort Logic
@@ -334,6 +464,7 @@ const TeacherClassExam = () => {
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onToggleActive={handleToggleActive}
         />
       </div>
 
