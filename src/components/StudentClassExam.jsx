@@ -171,8 +171,13 @@ const StudentClassExam = () => {
       setTakingExam(examForTaking);
     } catch (err) {
       console.error("Failed to load exam for student:", err);
-      setError("Failed to load exam. Please try again.");
-    } finally {
+
+      if (err.response && err.response.data && err.response.data.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    }finally {
       setLoading(false);
     }
   };
