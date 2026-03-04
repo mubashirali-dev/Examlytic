@@ -14,6 +14,11 @@ import StudentResult from "./Pages/StudentResult.jsx";
 import Admin from "./Admin.jsx";
 import StudentAdmin from "./components/StudentAdmin.jsx";
 import ClassManager from "./components/ClassManager.jsx";
+import SuperAdminScreen from "./Pages/SuperAdminScreen.jsx";
+import SuperAdminDashboard from "./Pages/SuperAdminDashboard.jsx";
+import SuperAdminAdmins from "./Pages/SuperAdmin-Admins.jsx";
+import SuperAdminCreateAdmin from "./Pages/SuperAdmin-CreateAdmin.jsx";
+import SuperAdminSetting from "./Pages/SuperAdminSetting.jsx";
 
 export default function App() {
   return (
@@ -29,6 +34,14 @@ export default function App() {
         {/* Redirect /signup to /signup-teacher by default or as requested */}
         <Route path="/signup" element={<Navigate to="/signup-teacher" replace />} />
         <Route path="/admin" element={<Admin />} />
+        
+        {/* SuperAdmin Routes Layout */}
+        <Route path="/superadmin" element={<SuperAdminScreen />}>
+          <Route index element={<SuperAdminDashboard />} />
+          <Route path="admins" element={<SuperAdminAdmins />} />
+          <Route path="create-admin" element={<SuperAdminCreateAdmin />} />
+          <Route path="settings" element={<SuperAdminSetting />} />
+        </Route>
         
         {/* Teacher Routes Layout */}
         <Route element={<TeacherScreen />}>

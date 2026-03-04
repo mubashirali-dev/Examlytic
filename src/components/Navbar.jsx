@@ -1,6 +1,6 @@
 import { Menu } from "lucide-react";
 
-const Navbar = ({ toggleSidebar }) => {
+const Navbar = ({ toggleSidebar, userName = "User Name" }) => {
   return (
     <div className="w-full h-16 bg-[#0F6B75] flex items-center justify-between px-4 text-white fixed top-0 z-50 shadow-md">
       <div className="flex items-center gap-3">
@@ -9,7 +9,7 @@ const Navbar = ({ toggleSidebar }) => {
           alt="User"
           className="w-10 h-10 rounded-full border-2 border-white"
         />
-        <span className="font-semibold text-lg hidden sm:block">User Name</span>
+        <span className="font-semibold text-lg hidden sm:block">{userName}</span>
       </div>
 
       <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">

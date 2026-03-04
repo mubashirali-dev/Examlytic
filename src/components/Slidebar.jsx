@@ -8,6 +8,9 @@ import {
   ChevronRight,
   ChevronLeft,
   UserPlus,
+  LayoutDashboard,
+  Users,
+  Settings
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ConfirmationModal from "./ConfirmationModal";
@@ -25,6 +28,10 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
     if (path === "/teacher-reports") return "Reports";
     if (path === "/teacher-results") return "Results";
     if (path === "/student-results") return "My Results";
+    if (path === "/superadmin") return "Dashboard";
+    if (path === "/superadmin/admins") return "Admins";
+    if (path === "/superadmin/create-admin") return "Create Admin";
+    if (path === "/superadmin/settings") return "Settings";
     if (path === "/teacher-home" || path === "/student-home") return "Home";
     return "Home"; // Default fallback
   });
@@ -41,6 +48,10 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
     else if (path === "/teacher-reports") newItem = "Reports";
     else if (path === "/teacher-results") newItem = "Results";
     else if (path === "/student-results") newItem = "My Results";
+    else if (path === "/superadmin") newItem = "Dashboard";
+    else if (path === "/superadmin/admins") newItem = "Admins";
+    else if (path === "/superadmin/create-admin") newItem = "Create Admin";
+    else if (path === "/superadmin/settings") newItem = "Settings";
     else if (path === "/teacher-home" || path === "/student-home")
       newItem = "Home";
 
@@ -80,6 +91,13 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
     menuItems = [
       { icon: Home, label: "Home" },
       { icon: CheckSquare, label: "My Results" },
+    ];
+  } else if (role === "SuperAdmin") {
+    menuItems = [
+      { icon: LayoutDashboard, label: "Dashboard" },
+      { icon: Users, label: "Admins" },
+      { icon: UserPlus, label: "Create Admin" },
+      { icon: Settings, label: "Settings" }
     ];
   } else {
     // Default or fallback
@@ -152,6 +170,14 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
                   navigate("/teacher-results");
                 } else if (item.label === "My Results") {
                   navigate("/student-results");
+                } else if (item.label === "Dashboard") {
+                  navigate("/superadmin");
+                } else if (item.label === "Admins") {
+                  navigate("/superadmin/admins");
+                } else if (item.label === "Create Admin") {
+                  navigate("/superadmin/create-admin");
+                } else if (item.label === "Settings") {
+                  navigate("/superadmin/settings");
                 }
               }}
             >
