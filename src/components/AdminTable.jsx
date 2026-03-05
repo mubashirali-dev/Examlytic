@@ -1,7 +1,7 @@
 import React from 'react';
 import { Eye, ShieldAlert, ShieldCheck, Trash2 } from "lucide-react";
 
-const AdminTable = ({ admins, onActionClick }) => {
+const AdminTable = ({ admins, onActionClick, onViewClick }) => {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left border-collapse whitespace-nowrap">
@@ -33,7 +33,11 @@ const AdminTable = ({ admins, onActionClick }) => {
               </td>
               <td className="px-6 py-4 text-center">
                 <div className="flex justify-center items-center gap-3 text-gray-500">
-                  <button className="hover:text-[#0F6B75] transition-colors cursor-pointer" title="View Details">
+                  <button 
+                    onClick={() => onViewClick && onViewClick(admin)}
+                    className="hover:text-[#0F6B75] transition-colors cursor-pointer" 
+                    title="View Details"
+                  >
                     <Eye size={18} />
                   </button>
                   <button 

@@ -104,7 +104,7 @@ export default function ClassManager() {
       courseTitle: cls.courseTitle || "",
       classCode: cls.classCode || "",
       creditHours: cls.creditHours || "",
-      instructorId: cls.instructorId || "", // 🔥 default teacher
+      instructorId: cls.instructorId || "", // default teacher
       semester: cls.semester || "",
       capacity: cls.capacity || "",
     });
