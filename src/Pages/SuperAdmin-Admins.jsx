@@ -94,6 +94,7 @@ const SuperAdminAdmins = () => {
           admins={filteredAdmins} 
           onActionClick={handleActionClick} 
           onViewClick={setSelectedAdmin}
+          itemsPerPage={30}
         />
 
         {filteredAdmins.length === 0 && (

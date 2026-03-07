@@ -96,9 +96,9 @@ const ViewAdminDetail = ({ admin, onClose }) => {
 
       {/* Content Area */}
       <div className="mt-6 animate-in fade-in duration-300">
-        {activeTab === "Teachers" && <TableTeacher teachers={mockTeachers} />}
-        {activeTab === "Students" && <TableStudent students={mockStudents} />}
-        {activeTab === "Exams" && <TableExam exams={mockExams} />}
+        {activeTab === "Teachers" && <TableTeacher teachers={mockTeachers} itemsPerPage={30} />}
+        {activeTab === "Students" && <TableStudent students={mockStudents} itemsPerPage={30} />}
+        {activeTab === "Exams" && <TableExam exams={mockExams} itemsPerPage={30} />}
       </div>
 
       <style dangerouslySetInnerHTML={{__html: `

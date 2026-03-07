@@ -11,9 +11,12 @@ import TeacherExam from "./Pages/TeacherExam.jsx";
 import TeacherReport from "./Pages/TeacherReport.jsx";
 import TeacherResult from "./Pages/TeacherResult.jsx";
 import StudentResult from "./Pages/StudentResult.jsx";
-import Admin from "./Admin.jsx";
+import AdminScreen from "./Pages/AdminScreen.jsx";
+import AdminDashboard from "./Pages/AdminDashboard.jsx";
+import AdminTeacher from "./Pages/AdminTeacher.jsx";
+import AdminClasses from "./Pages/AdminClasses.jsx";
+import AdminStudents from "./Pages/AdminStudents.jsx";
 import StudentAdmin from "./components/StudentAdmin.jsx";
-import ClassManager from "./components/ClassManager.jsx";
 import SuperAdminScreen from "./Pages/SuperAdminScreen.jsx";
 import SuperAdminDashboard from "./Pages/SuperAdminDashboard.jsx";
 import SuperAdminAdmins from "./Pages/SuperAdmin-Admins.jsx";
@@ -30,10 +33,9 @@ export default function App() {
         {/* Signup Routes */}
         <Route path="/signup-teacher" element={<TeacherSignUp />} />
         <Route path="/signup-student" element={<StudentSignUp />} />
-        <Route path="/admin-classes" element={<ClassManager />} />
+
         {/* Redirect /signup to /signup-teacher by default or as requested */}
         <Route path="/signup" element={<Navigate to="/signup-teacher" replace />} />
-        <Route path="/admin" element={<Admin />} />
         
         {/* SuperAdmin Routes Layout */}
         <Route path="/superadmin" element={<SuperAdminScreen />}>
@@ -41,6 +43,14 @@ export default function App() {
           <Route path="admins" element={<SuperAdminAdmins />} />
           <Route path="create-admin" element={<SuperAdminCreateAdmin />} />
           <Route path="settings" element={<SuperAdminSetting />} />
+        </Route>
+
+        {/* Admin Routes Layout */}
+        <Route path="/admin" element={<AdminScreen />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="teachers" element={<AdminTeacher />} />
+          <Route path="students" element={<AdminStudents />} />
+          <Route path="classes" element={<AdminClasses />} />
         </Route>
         
         {/* Teacher Routes Layout */}
@@ -50,7 +60,6 @@ export default function App() {
           <Route path="/teacher-reports" element={<TeacherReport />} />
           <Route path="/inviteStudent" element={<StudentAdmin />} />
           <Route path="/teacher-results" element={<TeacherResult />} />
-
         </Route>
 
         {/* Student Routes Layout */}
