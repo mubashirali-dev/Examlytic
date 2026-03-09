@@ -10,7 +10,10 @@ import {
   UserPlus,
   LayoutDashboard,
   Users,
-  Settings
+  Settings,
+  GraduationCap,
+  FileCheck,
+  Library
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ConfirmationModal from "./ConfirmationModal";
@@ -32,6 +35,11 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
     if (path === "/superadmin/admins") return "Admins";
     if (path === "/superadmin/create-admin") return "Create Admin";
     if (path === "/superadmin/settings") return "Settings";
+    if (path === "/admin/dashboard" || path === "/admin") return "Dashboard";
+    if (path === "/admin/teachers") return "Teachers";
+    if (path === "/admin/students") return "Students";
+    if (path === "/admin-classes" || path === "/admin/classes") return "Classes";
+    if (path === "/admin/settings") return "Settings";
     if (path === "/teacher-home" || path === "/student-home") return "Home";
     return "Home"; // Default fallback
   });
@@ -52,6 +60,11 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
     else if (path === "/superadmin/admins") newItem = "Admins";
     else if (path === "/superadmin/create-admin") newItem = "Create Admin";
     else if (path === "/superadmin/settings") newItem = "Settings";
+    else if (path === "/admin/dashboard" || path === "/admin") newItem = "Dashboard";
+    else if (path === "/admin/teachers") newItem = "Teachers";
+    else if (path === "/admin/students") newItem = "Students";
+    else if (path === "/admin-classes" || path === "/admin/classes") newItem = "Classes";
+    else if (path === "/admin/settings") newItem = "Settings";
     else if (path === "/teacher-home" || path === "/student-home")
       newItem = "Home";
 
@@ -97,6 +110,14 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
       { icon: LayoutDashboard, label: "Dashboard" },
       { icon: Users, label: "Admins" },
       { icon: UserPlus, label: "Create Admin" },
+      { icon: Settings, label: "Settings" }
+    ];
+  } else if (role === "Admin") {
+    menuItems = [
+      { icon: LayoutDashboard, label: "Dashboard" },
+      { icon: Users, label: "Teachers" },
+      { icon: GraduationCap, label: "Students" },
+      { icon: Library, label: "Classes" },
       { icon: Settings, label: "Settings" }
     ];
   } else {
@@ -172,13 +193,21 @@ const confirmSignOut = () => {
                 } else if (item.label === "My Results") {
                   navigate("/student-results");
                 } else if (item.label === "Dashboard") {
-                  navigate("/superadmin");
+                  if (role === "Admin") navigate("/admin");
+                  else navigate("/superadmin");
                 } else if (item.label === "Admins") {
                   navigate("/superadmin/admins");
                 } else if (item.label === "Create Admin") {
                   navigate("/superadmin/create-admin");
                 } else if (item.label === "Settings") {
-                  navigate("/superadmin/settings");
+                  if (role === "Admin") navigate("/admin/settings");
+                  else navigate("/superadmin/settings");
+                } else if (item.label === "Teachers") {
+                  navigate("/admin/teachers");
+                } else if (item.label === "Students") {
+                  navigate("/admin/students");
+                } else if (item.label === "Classes") {
+                  navigate("/admin/classes");
                 }
               }}
             >

@@ -1,35 +1,41 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { UserPlus, X } from "lucide-react";
+import { X, Search } from "lucide-react";
 
-const StudentAdmin = () => {
+const AdminTeacher = () => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const [students, setStudents] = useState([]);
-  const [fetchingStudents, setFetchingStudents] = useState(false);
+  const [teachers, setTeachers] = useState([]);
+  const [fetchingTeachers, setFetchingTeachers] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredTeachers = teachers.filter(t => 
+    [t.name, t.qualification, t.userId?.email, t.phone]
+      .some(val => val?.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   // ---------------- Email Validation ----------------
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // ---------------- Fetch Students ----------------
-  const fetchStudents = async () => {
-    setFetchingStudents(true);
+  // ---------------- Fetch Teachers ----------------
+  const fetchTeachers = async () => {
+    setFetchingTeachers(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/student");
-      setStudents(response.data?.data || []);
+      const response = await axios.get("http://localhost:5000/api/teacher");
+      setTeachers(response.data?.data || []);
     } catch (err) {
-      console.error("Failed to fetch students:", err);
+      console.error("Failed to fetch teachers:", err);
     } finally {
-      setFetchingStudents(false);
+      setFetchingTeachers(false);
     }
   };
 
   useEffect(() => {
-    fetchStudents();
+    fetchTeachers();
   }, []);
 
   // ---------------- Submit Handler ----------------
@@ -51,15 +57,15 @@ const StudentAdmin = () => {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:5000/api/admin/invite-student",
+        "http://localhost:5000/api/admin/invite-teacher",
         { email }
       );
 
       setSuccess(response.data?.message || "Invitation sent successfully");
       setEmail("");
 
-      // Refresh student list after successful invite
-      fetchStudents();
+      // Refresh teacher list after successful invite
+      fetchTeachers();
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -71,47 +77,60 @@ const StudentAdmin = () => {
   };
 
   return (
-    <div className="md:-mx-10">
-      <div className="max-w-6xl mx-auto pb-10">
+    <div className="max-w-6xl mx-auto pb-10">
+      
+      {/* Page Title & Quick Action */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <h2 className="text-[1.75rem] font-bold text-[#0F6B75]">Invite Students</h2>
-        <div className="flex items-center gap-3">
+        <h2 className="text-[1.75rem] font-bold text-[#0F6B75]">Teachers Management</h2>
+        
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+          <div className="relative w-full sm:w-64">
+            <input 
+              type="text" 
+              placeholder="Search teachers..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#0F6B75] bg-white transition-all shadow-sm"
+            />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          </div>
           <button
             onClick={() => setOpen(true)}
-            className="bg-[#0F6B75] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0c565e] transition-colors shadow-sm cursor-pointer"
+            className="w-full sm:w-auto bg-[#0F6B75] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0c565e] transition-colors shadow-sm cursor-pointer whitespace-nowrap"
           >
-            + Add Student
+            + Add Staff
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col min-h-[400px]">
-        {/* ================= Student Table ================= */}
-        <div className="overflow-x-auto flex-1">
-          {fetchingStudents ? (
-            <p className="p-8 text-center text-gray-500">Loading students...</p>
-          ) : students.length === 0 ? (
-            <p className="p-8 text-center text-gray-500">No students found.</p>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-h-[500px] flex flex-col">
+
+        {/* ================= Teacher Table ================= */}
+        <div className="overflow-x-auto">
+          {fetchingTeachers ? (
+            <p className="m-5 text-gray-600">Loading teachers...</p>
+          ) : filteredTeachers.length === 0 ? (
+            <p className="m-5 text-gray-600">No teachers found matching your search.</p>
           ) : (
             <table className="w-full text-left border-collapse whitespace-nowrap">
               <thead className="bg-gray-50/50 sticky top-0 z-10 shadow-sm">
                 <tr className="text-xs uppercase tracking-wider text-gray-500 font-bold">
                   <th className="py-3 px-6">Name</th>
-                  <th className="py-3 px-6">Roll No</th>
+                  <th className="py-3 px-6">Qualification</th>
                   <th className="py-3 px-6">Email</th>
-                  <th className="py-3 px-6">Class</th>
+                  <th className="py-3 px-6">Phone</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
-                {students.map((student) => (
+              <tbody>
+                {filteredTeachers.map((teacher) => (
                   <tr
-                    key={student._id}
-                    className="hover:bg-gray-50/80 transition-colors"
+                    key={teacher._id}
+                    className="border-b last:border-b-0 hover:bg-gray-50/80 transition-colors"
                   >
-                    <td className="py-3 px-6 text-gray-800 font-medium">{student.name}</td>
-                    <td className="py-3 px-6 text-gray-600 font-medium">{student.rollNo}</td>
-                    <td className="py-3 px-6 text-gray-600">{student.userId?.email}</td>
-                    <td className="py-3 px-6 text-gray-600">{student.class}</td>
+                    <td className="py-3 px-6 text-gray-800 font-medium">{teacher.name}</td>
+                    <td className="py-3 px-6 text-gray-600">{teacher.qualification}</td>
+                    <td className="py-3 px-6 text-gray-600">{teacher.userId?.email}</td>
+                    <td className="py-3 px-6 text-gray-600">{teacher.phone}</td>
                   </tr>
                 ))}
               </tbody>
@@ -137,11 +156,11 @@ const StudentAdmin = () => {
             </button>
 
             <h2 className="text-xl font-bold text-[#0F6B75] mb-2">
-              Add Student
+              Add Staff
             </h2>
 
             <p className="text-sm text-gray-500 pb-4">
-              Enter the email address to invite a student
+              Enter the email address to invite a new staff member.
             </p>
 
             {/* Email Input */}
@@ -150,7 +169,7 @@ const StudentAdmin = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="student@edu.pk"
+              placeholder="teacher@example.com"
               className="w-full border border-gray-200 p-2.5 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-[#0F6B75] focus:border-transparent transition-all"
             />
 
@@ -166,14 +185,13 @@ const StudentAdmin = () => {
               disabled={loading}
               className="w-full bg-[#0F6B75] text-white text-sm font-medium py-2.5 rounded-md hover:bg-[#0c565e] disabled:opacity-50 disabled:cursor-not-allowed mt-4 transition-colors cursor-pointer shadow-sm"
             >
-              {loading ? "Sending..." : "Send Invitation"}
+              {loading ? "Sending Invitation..." : "Send Invitation"}
             </button>
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 };
 
-export default StudentAdmin;
+export default AdminTeacher;
