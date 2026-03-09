@@ -4,6 +4,7 @@ import MainNavbar from "../components/MainNavbar";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const API_BASE_URL = "http://localhost:5000/api";
 
@@ -54,37 +55,95 @@ export default function LoginPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+const handleLogin = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) return;
 
-    setLoading(true);
-    setErrors({});
+  setLoading(true);
+  setErrors({});
 
-    try {
-      const response = await axios.post(`${API_BASE_URL}/teacher/login`, {
-        email: formData.email,
-        password: formData.password,
-        role: formData.role, // send role to backend
-      });
+  try {
+    const response = await axios.post(`${API_BASE_URL}/teacher/login`, {
+      email: formData.email,
+      password: formData.password,
+      role: formData.role,
+    });
 
-      const { accessToken, refreshToken, user } = response.data;
+    const { accessToken, refreshToken, user } = response.data;
 
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem("currentUser", JSON.stringify(user));
+    // store tokens
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
 
-      if (rememberMe) localStorage.setItem("rememberedEmail", formData.email);
-      else localStorage.removeItem("rememberedEmail");
+    // store role in cookie
+    Cookies.set("role", user.role, { expires: 1 });
 
-      navigate(user.role === "teacher" ? "/teacher-home" : "/student-home", { replace: true });
-    } catch (error) {
-      setErrors({ email: error?.response?.data?.message || "Invalid email or password" });
-    } finally {
-      setLoading(false);
+    // store user
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+    if (rememberMe) {
+      localStorage.setItem("rememberedEmail", formData.email);
+    } else {
+      localStorage.removeItem("rememberedEmail");
     }
-  };
 
+    // redirect by role
+    switch (user.role) {
+      case "student":
+        navigate("/student-home", { replace: true });
+        break;
+
+      case "teacher":
+        navigate("/teacher-home", { replace: true });
+        break;
+
+      case "admin":
+        navigate("/admin", { replace: true });
+        break;
+
+      case "super-admin":
+        navigate("/superadmin", { replace: true });
+        break;
+
+      default:
+        navigate("/");
+    }
+  } catch (error) {
+    setErrors({
+      email: error?.response?.data?.message || "Invalid email or password",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+ const getDashboardByRole = (role) => {
+  switch (role) {
+    case "student":
+      return "/student-home";
+
+    case "teacher":
+      return "/teacher-home";
+
+    case "admin":
+      return "/admin";
+
+    case "super-admin":
+      return "/superadmin";
+
+    default:
+      return "/login";
+  }
+};
+
+useEffect(() => {
+  const token = localStorage.getItem("accessToken");
+  const role = Cookies.get("role");
+
+  if (token && role) {
+    navigate(getDashboardByRole(role), { replace: true });
+  }
+}, []);
   return (
     <>
       <MainNavbar />
@@ -100,15 +159,17 @@ export default function LoginPage() {
                 {/* ROLE SELECTOR */}
                 <div>
                   <label className="font-semibold text-gray-700 mb-1 block">Login as</label>
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#0F6B75]/50"
-                  >
-                    <option value="student">Student</option>
-                    <option value="teacher">Teacher</option>
-                  </select>
+                 <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3"
+                >
+                  <option value="student">Student</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="admin">Admin</option>
+                  <option value="super-admin">Super Admin</option>
+                </select>
                 </div>
 
                 {/* EMAIL */}

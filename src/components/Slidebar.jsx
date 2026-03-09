@@ -108,11 +108,12 @@ const SlideBar = ({ isMobileOpen, closeMobileSidebar, onHomeClick, role }) => {
     setIsSignOutModalOpen(true);
   };
 
-  const confirmSignOut = () => {
-    setIsSignOutModalOpen(false);
-    localStorage.removeItem("currentUser");
-    navigate("/login", { replace: true });
-  };
+const confirmSignOut = () => {
+  setIsSignOutModalOpen(false);
+  localStorage.removeItem("currentUser");
+  document.cookie = "role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  navigate("/login", { replace: true });
+};
 
   const bottomItems = [
     { icon: LogOut, label: "Sign Out", action: handleSignOutClick },
