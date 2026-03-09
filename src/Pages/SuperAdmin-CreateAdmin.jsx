@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserPlus, Save, X, Eye, EyeOff } from "lucide-react";
 import DropDownMenu from "../components/DropDownMenu";
+import axios from "axios";
 
 const SuperAdminCreateAdmin = () => {
   const navigate = useNavigate();
@@ -25,20 +26,53 @@ const SuperAdminCreateAdmin = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-    
-    console.log("Creating new admin:", formData);
-    // Backend API Call here
-    
-    // Redirect back to Admin list on success
-    navigate("/superadmin/admins");
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  // Prepare payload
+  const payload = {
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    email: formData.email,
+    institutionName: formData.institutionName,
+    password: formData.password,
+    // Map frontend "Suspended" to backend "Inactive"
+    status: formData.status === "Suspended" ? "Inactive" : "Active",
   };
 
+  try {
+    const { data } = await axios.post("http://localhost:5000/api/admin/create", payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    // Axios treats 2xx as success, so no need for extra response.ok check
+    alert(data.message || "Admin created successfully");
+
+    // Redirect to admin list
+    navigate("/superadmin/admins");
+  } catch (error) {
+    console.error(error);
+
+    // Axios error handling
+    if (error.response) {
+      // Server responded with a status other than 2xx
+      alert(error.response.data.message || "Failed to create admin");
+    } else if (error.request) {
+      // No response received
+      alert("No response from server. Please try again.");
+    } else {
+      // Something else happened
+      alert("Error: " + error.message);
+    }
+  }
+};
   return (
     <div className="max-w-4xl mx-auto pb-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
