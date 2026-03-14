@@ -16,18 +16,41 @@ const TeacherExam = () => {
   const [filterClass, setFilterClass] = useState("All Classes");
   const [filterStatus, setFilterStatus] = useState("All Statuses");
 
-  // Modes
   const [isViewMode, setIsViewMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedExam, setSelectedExam] = useState(null);
 
-  // Exams loaded from API
   const [exams, setExams] = useState([]);
 
+  // ================= GET TEACHER ID =================
+  const getTeacherId = () => {
+    try {
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      return currentUser?.id || null;
+    } catch {
+      return null;
+    }
+  };
+
+  // ================= FETCH EXAMS =================
   const fetchExams = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/exams`);
+      const teacherId = getTeacherId();
+
+      if (!teacherId) {
+        console.error("No teacher ID found in localStorage");
+        return;
+      }
+
+      console.log("Fetching exams for teacherId:", teacherId);
+
+      const res = await axios.get(`${API_BASE_URL}/exams/my`, {
+        headers: {
+          "x-teacher-id": teacherId,
+        },
+      });
+
       const apiExams = res.data?.data || [];
 
       const mapped = apiExams.map((exam) => {
@@ -76,8 +99,8 @@ const TeacherExam = () => {
         return {
           id: exam._id,
           title: exam.title,
-          subject: "", // no subject in backend model
-          class: "", // no class name, only classId
+          subject: exam.classId?.courseTitle || "",
+          class: exam.classId?.className || "",
           questions: mcqCount + shortCount,
           questionsList,
           totalMarks: computedTotal,
@@ -102,35 +125,26 @@ const TeacherExam = () => {
     fetchExams();
   }, []);
 
-  // Derive unique options for filters
-  const subjects = ["All Subjects", ...new Set(exams.map((e) => e.subject))];
-  const classes = ["All Classes", ...new Set(exams.map((e) => e.class))];
+  // ================= FILTERS =================
+  const subjects = ["All Subjects", ...new Set(exams.map((e) => e.subject).filter(Boolean))];
+  const classes = ["All Classes", ...new Set(exams.map((e) => e.class).filter(Boolean))];
   const statuses = ["All Statuses", ...new Set(exams.map((e) => e.status))];
 
-  // Filter Logic
   const filteredExams = exams.filter((exam) => {
-    const matchSubject =
-      filterSubject === "All Subjects" || exam.subject === filterSubject;
-    const matchClass =
-      filterClass === "All Classes" || exam.class === filterClass;
-    const matchStatus =
-      filterStatus === "All Statuses" || exam.status === filterStatus;
+    const matchSubject = filterSubject === "All Subjects" || exam.subject === filterSubject;
+    const matchClass = filterClass === "All Classes" || exam.class === filterClass;
+    const matchStatus = filterStatus === "All Statuses" || exam.status === filterStatus;
     return matchSubject && matchClass && matchStatus;
   });
 
+  // ================= HANDLERS =================
   const handleView = (exam) => {
     setSelectedExam(exam);
     setIsViewMode(true);
   };
 
   const handleEdit = (exam) => {
-    // Ensure questions array exists for CreateExam
-    const examToEdit = {
-      ...exam,
-      questions: exam.questionsList || [],
-      // If we were real, we'd fetch the full exam details here
-    };
-    setSelectedExam(examToEdit);
+    setSelectedExam({ ...exam, questions: exam.questionsList || [] });
     setIsEditMode(true);
   };
 
@@ -147,28 +161,23 @@ const TeacherExam = () => {
 
   const handleSaveExam = async (updatedExam) => {
     try {
-      const mcqQuestions =
-        (updatedExam.questions || [])
-          .filter((q) => q.type === "mcq")
-          .map((q) => ({
-            question: q.text,
-            options: q.options,
-            correctOptionIndex: q.correctOption,
-            marks: Number(q.marks),
-          })) || [];
+      const mcqQuestions = (updatedExam.questions || [])
+        .filter((q) => q.type === "mcq")
+        .map((q) => ({
+          question: q.text,
+          options: q.options,
+          correctOptionIndex: q.correctOption,
+          marks: Number(q.marks),
+        }));
 
       const startTimeIso =
         updatedExam.date && updatedExam.startTime
-          ? new Date(
-              `${updatedExam.date}T${updatedExam.startTime}:00`,
-            ).toISOString()
+          ? new Date(`${updatedExam.date}T${updatedExam.startTime}:00`).toISOString()
           : undefined;
 
       const endTimeIso =
         updatedExam.date && updatedExam.endTime
-          ? new Date(
-              `${updatedExam.date}T${updatedExam.endTime}:00`,
-            ).toISOString()
+          ? new Date(`${updatedExam.date}T${updatedExam.endTime}:00`).toISOString()
           : undefined;
 
       const payload = {
@@ -193,8 +202,6 @@ const TeacherExam = () => {
       };
 
       await axios.put(`${API_BASE_URL}/exams/${updatedExam.id}`, payload);
-
-      // Refresh list from API so UI stays in sync
       await fetchExams();
     } catch (err) {
       console.error("Failed to update exam:", err);
@@ -204,14 +211,12 @@ const TeacherExam = () => {
     setSelectedExam(null);
   };
 
+  // ================= VIEWS =================
   if (isViewMode && selectedExam) {
     return (
       <ViewExam
         exam={selectedExam}
-        onBack={() => {
-          setIsViewMode(false);
-          setSelectedExam(null);
-        }}
+        onBack={() => { setIsViewMode(false); setSelectedExam(null); }}
       />
     );
   }
@@ -221,10 +226,7 @@ const TeacherExam = () => {
       <CreateExam
         initialData={selectedExam}
         onSave={handleSaveExam}
-        onBack={() => {
-          setIsEditMode(false);
-          setSelectedExam(null);
-        }}
+        onBack={() => { setIsEditMode(false); setSelectedExam(null); }}
       />
     );
   }
@@ -244,23 +246,10 @@ const TeacherExam = () => {
           </h1>
         </div>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-3">
-          <DropDownMenu
-            options={subjects}
-            value={filterSubject}
-            onChange={setFilterSubject}
-          />
-          <DropDownMenu
-            options={classes}
-            value={filterClass}
-            onChange={setFilterClass}
-          />
-          <DropDownMenu
-            options={statuses}
-            value={filterStatus}
-            onChange={setFilterStatus}
-          />
+          <DropDownMenu options={subjects} value={filterSubject} onChange={setFilterSubject} />
+          <DropDownMenu options={classes} value={filterClass} onChange={setFilterClass} />
+          <DropDownMenu options={statuses} value={filterStatus} onChange={setFilterStatus} />
         </div>
       </div>
 

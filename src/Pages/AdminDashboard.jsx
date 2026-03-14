@@ -1,90 +1,164 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, FileText, Settings, GraduationCap } from "lucide-react";
+import { Users, FileText, Settings, GraduationCap, Loader2, AlertCircle } from "lucide-react";
+import axios from "axios";
 import TableTeacher from "../components/TableTeacher";
-
-// Mock data for UI layout demonstration
-const mockStats = {
-  totalTeachers: 145,
-  totalStudents: 3250,
-  activeExams: 18,
-  totalClasses: 84
-};
-
-const mockTeachers = [
-  { id: 1, name: "Ahmad Hasan", department: "Computer Science", email: "ahmad@edu.pk", phone: "+92 300 1234567", qualification: "Ph.D. Computer Science", experience: "10 Years", classes: 4, students: 120, status: "Active" },
-  { id: 2, name: "Sara Ahmed", department: "Mathematics", email: "sara@edu.pk", phone: "+92 333 7654321", qualification: "M.Phil Mathematics", experience: "5 Years", classes: 3, students: 95, status: "Active" },
-  { id: 3, name: "Bilal Tariq", department: "Physics", email: "bilal@edu.pk", phone: "+92 321 9876543", qualification: "M.Sc Physics", experience: "3 Years", classes: 2, students: 60, status: "Pending" },
-  { id: 4, name: "Ayesha Khan", department: "Chemistry", email: "ayesha@edu.pk", phone: "+92 301 3456789", qualification: "Ph.D. Chemistry", experience: "8 Years", classes: 5, students: 150, status: "Active" },
-  { id: 5, name: "Zain Ali", department: "English", email: "zain@edu.pk", phone: "+92 345 5432109", qualification: "M.A English", experience: "4 Years", classes: 3, students: 85, status: "Active" },
-];
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
+  const [teachers, setTeachers] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [statsError, setStatsError] = useState(null);
+
+  const fetchTeachers = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get("http://localhost:5000/api/teacher");
+      if (res.data.success) {
+        setTeachers(res.data.data);
+      } else {
+        setError("Failed to load teachers.");
+      }
+    } catch (err) {
+      setError("Could not connect to server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    setStatsError(null);
+    try {
+      const res = await axios.get("http://localhost:5000/api/admin/dashboard-stats");
+      if (res.data.success) {
+        setStats(res.data.stats);
+      } else {
+        setStatsError(true);
+      }
+    } catch (err) {
+      setStatsError(true);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeachers();
+    fetchStats();
+  }, []);
+
+  const normalizedTeachers = teachers.map((t) => ({
+    id: t._id,
+    name: t.name,
+    email: t.userId?.email ?? "—",
+    phone: t.phone ?? "—",
+    qualification: t.qualification ?? "—",
+    experience: t.experience ?? "—",
+    status: t.userId?.status ?? "Active",
+  }));
+
+  // Reusable stat card value renderer
+  const StatValue = ({ value, colorClass = "text-gray-800" }) => {
+    if (statsLoading) return <Loader2 size={24} className="animate-spin text-gray-400 mt-4" />;
+    if (statsError) return <span className={`text-3xl font-bold mt-4 ${colorClass}`}>—</span>;
+    return <h2 className={`text-3xl font-bold mt-4 ${colorClass}`}>{value ?? "—"}</h2>;
+  };
+
   return (
-    <div className="max-w-6xl mx-auto pb-10">
-      
-      {/* Page Title & Quick Action */}
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <h2 className="text-[1.75rem] font-bold text-[#0F6B75]">Dashboard Overview</h2>
-        
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => console.log("Open Invite Flow")}
-            className="bg-[#0F6B75] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0c565e] transition-colors shadow-sm cursor-pointer"
-          >
-            + Add Teacher
-          </button>
-        </div>
+        <h2 className="text-2xl sm:text-[1.75rem] font-bold text-[#0F6B75]">
+          Dashboard Overview
+        </h2>
+        <button
+          onClick={() => navigate("/admin/add-teacher")}
+          className="bg-[#0F6B75] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#0c565e] transition-colors shadow-sm"
+        >
+          + Add Teacher
+        </button>
       </div>
 
-      {/* Metric Cards Grid - 4 Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 text-[#0F6B75]">
-        
-        {/* Total Teachers (Highlight Card) */}
-        <div className="bg-[#0F6B75] text-white p-6 rounded-2xl shadow-md min-h-[140px] flex flex-col justify-between">
-          <div className="flex items-center gap-3 mb-2 opacity-90">
-            <Users size={24} />
-            <span className="font-medium text-teal-50">Total Teachers</span>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+
+        {/* Total Teachers */}
+        <div className="bg-[#0F6B75] text-white p-6 rounded-2xl shadow-md flex flex-col justify-between min-h-[130px]">
+          <div className="flex items-center gap-2 opacity-90">
+            <Users size={22} />
+            <span className="font-medium text-sm">Total Teachers</span>
           </div>
-          <div>
-            <h2 className="text-4xl font-bold tracking-tight mb-2 mt-4">{mockStats.totalTeachers}</h2>
-          </div>
+          {statsLoading
+            ? <Loader2 size={24} className="animate-spin opacity-70 mt-4" />
+            : <h2 className="text-4xl font-bold tracking-tight mt-4">
+                {statsError ? "—" : stats?.totalTeachers ?? "—"}
+              </h2>
+          }
         </div>
 
         {/* Total Students */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
-          <div className="flex items-center gap-3 mb-2 text-gray-500">
-            <GraduationCap size={24} className="text-teal-600" />
-            <span className="font-medium">Total Students</span>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between min-h-[130px]">
+          <div className="flex items-center gap-2 text-gray-500">
+            <GraduationCap size={22} className="text-teal-600" />
+            <span className="font-medium text-sm">Total Students</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-800">{mockStats.totalStudents}</h2>
+          <StatValue value={stats?.totalStudents} />
         </div>
 
         {/* Active Exams */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
-          <div className="flex items-center gap-3 mb-2 text-gray-500">
-            <FileText size={24} className="text-teal-600" />
-            <span className="font-medium">Active Exams</span>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between min-h-[130px]">
+          <div className="flex items-center gap-2 text-gray-500">
+            <FileText size={22} className="text-teal-600" />
+            <span className="font-medium text-sm">Active Exams</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-800">{mockStats.activeExams}</h2>
+          <StatValue value={stats?.totalExams} />
         </div>
 
         {/* Total Classes */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
-          <div className="flex items-center gap-3 mb-2 text-gray-500">
-            <Settings size={24} className="text-teal-600" />
-            <span className="font-medium">Total Classes</span>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between min-h-[130px]">
+          <div className="flex items-center gap-2 text-gray-500">
+            <Settings size={22} className="text-teal-600" />
+            <span className="font-medium text-sm">Total Classes</span>
           </div>
-          <h2 className="text-3xl font-bold text-gray-800">{mockStats.totalClasses}</h2>
+          <StatValue value={stats?.totalClasses} />
         </div>
+
       </div>
 
-      {/* Recent Teachers Preview Table */}
-      <div className="mb-6">
-        <TableTeacher title="Recent Teachers" teachers={mockTeachers.slice(0, 5)} />
-      </div>
+      {/* Teachers Table */}
+      {loading && (
+        <div className="flex items-center justify-center py-16 text-teal-700 gap-3">
+          <Loader2 className="animate-spin" size={24} />
+          <span className="text-sm font-medium">Loading teachers…</span>
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-xl">
+          <AlertCircle size={20} />
+          <p className="text-sm">{error}</p>
+          <button
+            onClick={fetchTeachers}
+            className="ml-auto text-xs underline hover:no-underline"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <TableTeacher
+          title="Recent Teachers"
+          teachers={normalizedTeachers.slice(0, 5)}
+        />
+      )}
 
     </div>
   );
