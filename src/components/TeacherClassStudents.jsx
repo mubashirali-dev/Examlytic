@@ -62,7 +62,7 @@ const TeacherClassStudents = ({ classId }) => {
     const { student, action } = actionModal;
     try {
       await axios.patch(
-        `${API_BASE_URL}/enrollments/${student._id}/status`,
+        `${API_BASE_URL}/enrollment/${student._id}`,
         { action },
         axiosConfig
       );
