@@ -1,90 +1,193 @@
-import { useState } from "react";
-import { TrendingUp, AlertTriangle, Users, Mail } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { TrendingUp, AlertTriangle, Users } from "lucide-react";
+import axios from "axios";
 import DropDownMenu from "../components/DropDownMenu";
+
+const getGrade = (obtained, total) => {
+  if (!total) return "N/A";
+  const pct = (obtained / total) * 100;
+  if (pct >= 90) return "A+";
+  if (pct >= 85) return "A";
+  if (pct >= 80) return "A-";
+  if (pct >= 75) return "B+";
+  if (pct >= 70) return "B";
+  if (pct >= 65) return "B-";
+  if (pct >= 60) return "C+";
+  if (pct >= 55) return "C";
+  if (pct >= 50) return "D";
+  return "F";
+};
 
 const TeacherReport = () => {
   const [activeTab, setActiveTab] = useState("Overview");
   const [selectedClass, setSelectedClass] = useState("All Classes");
+  const [results, setResults] = useState([]);
+  const [classNames, setClassNames] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const classes = ["All Classes", "BSCS 7A", "BSCS 7B", "BSSE 2A"];
+  const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+  const teacherId = currentUser.id;
 
-  // Mock Data
-  const stats = [
-    {
-      title: "Avg Class Score",
-      value: "78%",
-      icon: TrendingUp,
-      color: "text-green-600",
-      bg: "bg-green-100",
-    },
-    {
-      title: "Pass Rate",
-      value: "92%",
-      icon: Users,
-      color: "text-blue-600",
-      bg: "bg-blue-100",
-    },
-    {
-      title: "Flagged Cases",
-      value: "3",
-      icon: AlertTriangle,
-      color: "text-red-600",
-      bg: "bg-red-100",
-    },
-  ];
+  useEffect(() => {
+    const fetchReport = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get(`/api/results/teacher/${teacherId}/report`);
+        setResults(data.results || []);
+        setClassNames(data.classes || []);
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to fetch report");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReport();
+  }, [teacherId]);
 
-  const cheatingLogs = [
-    {
-      id: 1,
-      student: "Ali Khan",
-      exam: "Calculus Midterm",
-      time: "10:45 AM",
-      reason: "Tab Switching detected",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      student: "Sara Ahmed",
-      exam: "Physics Quiz",
-      time: "09:12 AM",
-      reason: "Face not detected",
-      status: "Reviewed",
-    },
-    {
-      id: 3,
-      student: "John Doe",
-      exam: "Calculus Midterm",
-      time: "11:00 AM",
-      reason: "Multiple faces detected",
-      status: "Pending",
-    },
-  ];
+  /* ---------- Filter results by selected class ---------- */
+  const filteredResults = useMemo(() => {
+    if (selectedClass === "All Classes") return results;
+    return results.filter(
+      (r) => r.examId?.classId?.className === selectedClass
+    );
+  }, [results, selectedClass]);
 
-  const handleEmailReport = (student) => {
-    alert(`Report emailed to ${student}'s parents successfully.`);
-  };
+  /* ---------- Stats ---------- */
+  const stats = useMemo(() => {
+    if (!filteredResults.length)
+      return { avgScore: "0%", passRate: "0%", flaggedCount: 0 };
+
+    const avgScore =
+      filteredResults.reduce(
+        (sum, r) => sum + (r.obtainedMarks / r.totalMarks) * 100,
+        0
+      ) / filteredResults.length;
+
+    const passed = filteredResults.filter((r) => r.isPassed).length;
+    const passRate = (passed / filteredResults.length) * 100;
+    const flaggedCount = filteredResults.filter((r) => r.isCheating).length;
+
+    return {
+      avgScore: `${avgScore.toFixed(1)}%`,
+      passRate: `${passRate.toFixed(1)}%`,
+      flaggedCount,
+    };
+  }, [filteredResults]);
+
+  /* ---------- Performance trend — avg score per exam ---------- */
+  const performanceTrend = useMemo(() => {
+    const examMap = {};
+    filteredResults.forEach((r) => {
+      const title = r.examId?.title || "Unknown";
+      if (!examMap[title]) examMap[title] = { total: 0, count: 0 };
+      examMap[title].total += (r.obtainedMarks / r.totalMarks) * 100;
+      examMap[title].count += 1;
+    });
+    return Object.entries(examMap).map(([title, { total, count }]) => ({
+      title,
+      avg: Math.round(total / count),
+    }));
+  }, [filteredResults]);
+
+  /* ---------- Cheating logs ---------- */
+  const cheatingLogs = useMemo(() => {
+    return filteredResults
+      .filter((r) => r.isCheating)
+      .map((r) => ({
+        id: r._id,
+        student: r.studentId?.name || "—",
+        rollNo: r.studentId?.rollNo || "—",
+        exam: r.examId?.title || "—",
+        reason: r.cheatingReason || "Suspicious activity",
+        submittedAt: r.submittedAt
+          ? new Date(r.submittedAt).toLocaleString()
+          : "—",
+      }));
+  }, [filteredResults]);
+
+  /* ---------- Student performance ---------- */
+  const studentPerformance = useMemo(() => {
+    const studentMap = {};
+    filteredResults.forEach((r) => {
+      const id = r.studentId?._id;
+      if (!id) return;
+      if (!studentMap[id]) {
+        studentMap[id] = {
+          name: r.studentId?.name || "—",
+          rollNo: r.studentId?.rollNo || "—",
+          totalObtained: 0,
+          totalMarks: 0,
+          attempts: 0,
+          passed: 0,
+        };
+      }
+      studentMap[id].totalObtained += r.obtainedMarks;
+      studentMap[id].totalMarks += r.totalMarks;
+      studentMap[id].attempts += 1;
+      if (r.isPassed) studentMap[id].passed += 1;
+    });
+
+    return Object.values(studentMap).sort(
+      (a, b) => b.totalObtained / b.totalMarks - a.totalObtained / a.totalMarks
+    );
+  }, [filteredResults]);
+
+  const classOptions = ["All Classes", ...classNames];
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-64 text-[#0F6B75] font-medium">
+        Loading report...
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="flex items-center justify-center h-64 text-red-500">
+        {error}
+      </div>
+    );
 
   return (
     <>
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-[#0F6B75]">
-            Reports
-          </h1>
-        </div>
-        <div className="flex gap-3">
-          <DropDownMenu
-            options={classes}
-            value={selectedClass}
-            onChange={setSelectedClass}
-          />
-        </div>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#0F6B75]">
+          Reports
+        </h1>
+        <DropDownMenu
+          options={classOptions}
+          value={selectedClass}
+          onChange={(val) => setSelectedClass(val)}
+        />
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {stats.map((stat, idx) => (
+        {[
+          {
+            title: "Avg Class Score",
+            value: stats.avgScore,
+            icon: TrendingUp,
+            color: "text-green-600",
+            bg: "bg-green-100",
+          },
+          {
+            title: "Pass Rate",
+            value: stats.passRate,
+            icon: Users,
+            color: "text-blue-600",
+            bg: "bg-blue-100",
+          },
+          {
+            title: "Flagged Cases",
+            value: stats.flaggedCount,
+            icon: AlertTriangle,
+            color: "text-red-600",
+            bg: "bg-red-100",
+          },
+        ].map((stat, idx) => (
           <div
             key={idx}
             className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4"
@@ -103,7 +206,7 @@ const TeacherReport = () => {
       {/* Main Content */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {/* Tabs */}
-        <div className="border-b border-gray-200 flex overflow-x-auto ">
+        <div className="border-b border-gray-200 flex overflow-x-auto">
           {["Overview", "Cheating Logs", "Student Performance"].map((tab) => (
             <button
               key={tab}
@@ -115,55 +218,71 @@ const TeacherReport = () => {
               }`}
             >
               {tab}
+              {/* Badge for cheating logs */}
+              {tab === "Cheating Logs" && cheatingLogs.length > 0 && (
+                <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
+                  {cheatingLogs.length}
+                </span>
+              )}
             </button>
           ))}
         </div>
 
         <div className="p-6">
+          {/* Overview Tab */}
           {activeTab === "Overview" && (
-            <div className="space-y-8">
-              {/* Chart Section */}
-              <div>
-                <h3 className="text-lg font-bold text-gray-800 mb-4">
-                  Performance Trend
-                </h3>
+            <div className="space-y-6">
+              <h3 className="text-lg font-bold text-gray-800">
+                Avg Score Per Exam
+              </h3>
+              {performanceTrend.length === 0 ? (
+                <div className="text-center py-16 text-gray-400">
+                  No exam data available.
+                </div>
+              ) : (
                 <div className="h-64 flex items-end justify-between gap-2 md:gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  {[65, 72, 68, 85, 78, 82, 90].map((height, i) => (
+                  {performanceTrend.map((exam, i) => (
                     <div
                       key={i}
                       className="w-full flex flex-col items-center gap-2 group"
                     >
                       <div
-                        className="w-full max-w-10 bg-[#0F6B75] rounded-t-md transition-all duration-500 group-hover:bg-[#0c565e] relative"
-                        style={{ height: `${height}%` }}
+                        className="w-full max-w-10 bg-[#0F6B75] rounded-t-md transition-all duration-500 group-hover:bg-[#0c565e] relative min-h-[4px]"
+                        style={{ height: `${exam.avg}%` }}
                       >
-                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                          {height}%
+                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          {exam.avg}%
                         </span>
                       </div>
-                      <span className="text-xs text-gray-500 font-medium">
-                        Exam {i + 1}
+                      <span
+                        className="text-xs text-gray-500 font-medium text-center max-w-[60px] truncate"
+                        title={exam.title}
+                      >
+                        {exam.title}
                       </span>
                     </div>
                   ))}
                 </div>
-              </div>
+              )}
             </div>
           )}
 
-          {/* Cheating Logs */}
+          {/* Cheating Logs Tab */}
           {activeTab === "Cheating Logs" && (
-            <div>
-              <div className="overflow-x-auto">
+            <div className="overflow-x-auto">
+              {cheatingLogs.length === 0 ? (
+                <div className="text-center py-16 text-gray-400">
+                  No cheating cases detected.
+                </div>
+              ) : (
                 <table className="w-full text-left">
                   <thead className="bg-gray-50 text-gray-700 font-medium border-b border-gray-200">
                     <tr>
-                      <th className="px-6 py-4">Student Name</th>
+                      <th className="px-6 py-4">Student</th>
+                      <th className="px-6 py-4">Roll No</th>
                       <th className="px-6 py-4">Exam</th>
-                      <th className="px-6 py-4">Flagged Reason</th>
-                      <th className="px-6 py-4">Time</th>
-                      <th className="px-6 py-4 text-center">Status</th>
-                      <th className="px-6 py-4 text-center">Action</th>
+                      <th className="px-6 py-4">Reason</th>
+                      <th className="px-6 py-4">Submitted At</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -175,45 +294,105 @@ const TeacherReport = () => {
                         <td className="px-6 py-4 font-medium text-gray-900">
                           {log.student}
                         </td>
+                        <td className="px-6 py-4 text-gray-500">{log.rollNo}</td>
                         <td className="px-6 py-4 text-gray-600">{log.exam}</td>
                         <td className="px-6 py-4 text-red-600 font-medium">
                           {log.reason}
                         </td>
                         <td className="px-6 py-4 text-gray-500 text-sm">
-                          {log.time}
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-bold ${
-                              log.status === "Pending"
-                                ? "bg-red-100 text-red-700"
-                                : "bg-green-100 text-green-700"
-                            }`}
-                          >
-                            {log.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <button
-                            onClick={() => handleEmailReport(log.student)}
-                            className="bg-white border border-gray-200 text-gray-600 hover:text-[#0F6B75] hover:border-[#0F6B75] px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 mx-auto cursor-pointer"
-                          >
-                            <Mail size={16} />
-                            Report
-                          </button>
+                          {log.submittedAt}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
+              )}
             </div>
           )}
 
-          {/* Student Performance */}
+          {/* Student Performance Tab */}
           {activeTab === "Student Performance" && (
-            <div className="text-center py-10 text-gray-500">
-              <p>Select a class to view detailed student metrics.</p>
+            <div className="overflow-x-auto">
+              {studentPerformance.length === 0 ? (
+                <div className="text-center py-16 text-gray-400">
+                  No student data available.
+                </div>
+              ) : (
+                <table className="w-full text-left">
+                  <thead className="bg-gray-50 text-gray-700 font-medium border-b border-gray-200">
+                    <tr>
+                      <th className="px-6 py-4">Student</th>
+                      <th className="px-6 py-4">Roll No</th>
+                      <th className="px-6 py-4 text-center">Exams Taken</th>
+                      <th className="px-6 py-4 text-center">Total Score</th>
+                      <th className="px-6 py-4 text-center">Avg Score</th>
+                      <th className="px-6 py-4 text-center">Grade</th>
+                      <th className="px-6 py-4 text-center">Pass Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {studentPerformance.map((s, idx) => {
+                      const avgPct = Math.round(
+                        (s.totalObtained / s.totalMarks) * 100
+                      );
+                      const grade = getGrade(s.totalObtained, s.totalMarks);
+                      const passRate = Math.round(
+                        (s.passed / s.attempts) * 100
+                      );
+                      return (
+                        <tr
+                          key={idx}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="px-6 py-4 font-medium text-gray-900">
+                            {s.name}
+                          </td>
+                          <td className="px-6 py-4 text-gray-500">{s.rollNo}</td>
+                          <td className="px-6 py-4 text-center text-gray-600">
+                            {s.attempts}
+                          </td>
+                          <td className="px-6 py-4 text-center font-bold text-[#0F6B75]">
+                            {s.totalObtained}/{s.totalMarks}
+                          </td>
+                          <td className="px-6 py-4 text-center text-gray-600">
+                            {avgPct}%
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                grade.startsWith("A")
+                                  ? "bg-green-100 text-green-700"
+                                  : grade.startsWith("B")
+                                    ? "bg-blue-100 text-blue-700"
+                                    : grade.startsWith("C")
+                                      ? "bg-yellow-100 text-yellow-700"
+                                      : grade.startsWith("D")
+                                        ? "bg-orange-100 text-orange-700"
+                                        : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {grade}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                passRate >= 70
+                                  ? "bg-green-100 text-green-700"
+                                  : passRate >= 50
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {passRate}%
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           )}
         </div>

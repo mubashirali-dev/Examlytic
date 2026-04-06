@@ -57,7 +57,7 @@ const StudentClass = ({ classData, onBack, onLeaveClass }) => {
       {/* Content Area */}
       <div className="mt-6">
         {activeTab === "Exams" && <StudentClassExam />}
-        {activeTab === "Material" && <Material role="Student" />}
+        {activeTab === "Material" && <Material role="Student" classId={classData.id} />}
       </div>
 
       <ConfirmationModal

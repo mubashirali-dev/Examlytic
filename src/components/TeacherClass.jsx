@@ -63,7 +63,9 @@ const TeacherClass = ({ classData, onUpdate }) => {
         {activeTab === "Exams" && (
           <TeacherClassExam classId={classData._id} />
         )}
-        {activeTab === "Material" && <Material role="Teacher" />}
+        {activeTab === "Material" && (
+          <Material role="Teacher" classId={classData._id} />
+        )}
       </div>
 
       {/* Edit Class Modal */}
