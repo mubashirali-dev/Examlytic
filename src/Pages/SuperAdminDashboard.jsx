@@ -4,6 +4,7 @@ import { Users, LayoutDashboard, Settings } from "lucide-react";
 import axios from "axios";
 import ConfirmationModal from "../components/ConfirmationModal";
 import AdminTable from "../components/AdminTable";
+import { API_URL } from "../config";
 
 const SuperAdminDashboard = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const SuperAdminDashboard = () => {
   const fetchStats = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/admin/stats"
+        `${API_URL}/api/admin/stats`
       );
 
       setStats(data.stats);
@@ -49,7 +50,7 @@ const SuperAdminDashboard = () => {
   const fetchAdmins = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/admin/all"
+        `${API_URL}/api/admin/all`
       );
 
       const adminList = data.admins.map((admin) => ({

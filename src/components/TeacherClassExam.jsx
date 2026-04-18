@@ -6,8 +6,9 @@ import CreateExam from "./CreateExam";
 import ConfirmationModal from "./ConfirmationModal";
 import ViewExam from "./ViewExam";
 import DropDownMenu from "./DropDownMenu";
+import { API_URL } from "../config";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = `${API_URL}/api`;
 
 const TeacherClassExam = ({ classId }) => {
   const [isCreating, setIsCreating] = useState(false);
@@ -324,7 +325,7 @@ const TeacherClassExam = ({ classId }) => {
     try {
 
       const res = await axios.get(
-        `http://localhost:5000/api/exams/${exam.id}`,
+        `${API_BASE_URL}/exams/${exam.id}`,
       );
       const backendExam = res.data?.data;
 

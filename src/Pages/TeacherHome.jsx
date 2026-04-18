@@ -4,6 +4,7 @@ import axios from "axios";
 import MyClass from "../components/MyClass";
 import QuickAction from "../components/QuickAction";
 import TeacherClass from "../components/TeacherClass";
+import { API_URL } from "../config";
 
 const TeacherHome = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,7 +28,7 @@ const TeacherHome = () => {
         }
 
         const response = await axios.get(
-          "http://localhost:5000/api/class/my-classes",
+          `${API_URL}/api/class/my-classes`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

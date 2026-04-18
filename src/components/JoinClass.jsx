@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { API_URL } from "../config";
 
 const JoinClass = ({ isOpen, onClose, onSuccess }) => {
   const [classCode, setClassCode] = useState("");
@@ -22,19 +23,16 @@ const JoinClass = ({ isOpen, onClose, onSuccess }) => {
 
       const token = localStorage.getItem("accessToken");
 
-      const response = await fetch(
-        `http://localhost:5000/api/enrollment/request`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            classCode: classCode.trim().toUpperCase(),
-          }),
-        }
-      );
+const response = await fetch(`${API_URL}/api/enrollment/request`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify({
+    classCode: classCode.trim().toUpperCase(),
+  }),
+});
 
       const data = await response.json();
 

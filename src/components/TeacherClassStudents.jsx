@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Check, X } from "lucide-react";
 import ConfirmationModal from "./ConfirmationModal";
+import { API_URL } from "../config";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = `${API_URL}/api`;
 
 const TeacherClassStudents = ({ classId }) => {
   const [approvedStudents, setApprovedStudents] = useState([]);

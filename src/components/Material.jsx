@@ -7,8 +7,9 @@ import {
 import axios from "axios";
 import ConfirmationModal from "./ConfirmationModal";
 import DropDownMenu from "./DropDownMenu";
+import { API_URL } from "../config";
 
-const BASE_URL = "http://localhost:5000/api/resources";
+const BASE_URL = `${API_URL}/api/resources`;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

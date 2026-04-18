@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { X, Search, Loader2, BookOpen, Hash, Clock, CalendarDays, Users, UserCircle2, Pencil, Trash2 } from "lucide-react";
+import { API_URL } from "../config";
 
-const API = "http://localhost:5000/api/class";
-const TEACHER_API = "http://localhost:5000/api/teacher/list";
+const API = `${API_URL}/api/class`;
+const TEACHER_API = `${API_URL}/api/teacher/list`;
 
 export default function AdminClasses() {
   const [classes, setClasses] = useState([]);

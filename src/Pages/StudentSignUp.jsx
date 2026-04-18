@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import MainNavbar from "../components/MainNavbar";
 import Footer from "../components/Footer";
+import { API_URL } from "../config";
 
 const StudentSignUp = () => {
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ const StudentSignUp = () => {
         class: formData.class,
       };
 
-      const response = await fetch("http://localhost:5000/api/student/signup", {
+      const response = await fetch(`${API_URL}/api/student/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

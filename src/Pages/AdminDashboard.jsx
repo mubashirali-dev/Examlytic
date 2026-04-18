@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Users, FileText, Settings, GraduationCap, Loader2, AlertCircle } from "lucide-react";
 import axios from "axios";
 import TableTeacher from "../components/TableTeacher";
+import { API_URL } from "../config";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const AdminDashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get("http://localhost:5000/api/teacher");
+      const res = await axios.get(`${API_URL}/api/teacher`);
       if (res.data.success) {
         setTeachers(res.data.data);
       } else {
@@ -35,7 +36,7 @@ const AdminDashboard = () => {
     setStatsLoading(true);
     setStatsError(null);
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/dashboard-stats");
+      const res = await axios.get(`${API_URL}/api/admin/dashboard-stats`);
       if (res.data.success) {
         setStats(res.data.stats);
       } else {

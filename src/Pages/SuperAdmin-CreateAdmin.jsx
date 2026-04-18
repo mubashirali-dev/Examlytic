@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { UserPlus, Save, X, Eye, EyeOff } from "lucide-react";
 import DropDownMenu from "../components/DropDownMenu";
 import axios from "axios";
+import { API_URL } from "../config";
 
 const SuperAdminCreateAdmin = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const handleSubmit = async (e) => {
   };
 
   try {
-    const { data } = await axios.post("http://localhost:5000/api/admin/create", payload, {
+    const { data } = await axios.post(`${API_URL}/api/admin/create`, payload, {
       headers: { "Content-Type": "application/json" },
     });
 

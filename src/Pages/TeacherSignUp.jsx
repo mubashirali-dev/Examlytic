@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import MainNavbar from "../components/MainNavbar";
 import Footer from "../components/Footer";
+import { API_URL } from "../config";
 
 const TeacherSignUp = () => {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ const TeacherSignUp = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/teacher/teacher-signup",
+        `${API_URL}/api/teacher/teacher-signup`,
         {
           method: "POST",
           headers: {

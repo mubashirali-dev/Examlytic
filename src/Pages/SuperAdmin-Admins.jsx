@@ -6,6 +6,7 @@ import AdminTable from "../components/AdminTable";
 import ConfirmationModal from "../components/ConfirmationModal";
 import DropDownMenu from "../components/DropDownMenu";
 import ViewAdminDetail from "../components/ViewAdminDetail";
+import { API_URL } from "../config";
 
 const SuperAdminAdmins = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const SuperAdminAdmins = () => {
   // Fetch admins from backend
   const fetchAdmins = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5000/api/admin/all");
+      const { data } = await axios.get(`${API_URL}/api/admin/all`);
 
       // Map backend data for UI table
       const adminList = data.admins.map((admin) => ({

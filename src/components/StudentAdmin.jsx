@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { UserPlus, X } from "lucide-react";
+import { API_URL } from "../config";
 
 const StudentAdmin = () => {
   const [open, setOpen] = useState(false);
@@ -19,7 +20,7 @@ const StudentAdmin = () => {
   const fetchStudents = async () => {
     setFetchingStudents(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/student");
+      const response = await axios.get(`${API_URL}/api/student`);
       setStudents(response.data?.data || []);
     } catch (err) {
       console.error("Failed to fetch students:", err);
@@ -51,7 +52,7 @@ const StudentAdmin = () => {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:5000/api/admin/invite-student",
+        `${API_URL}/api/admin/invite-student`,
         { email }
       );
 

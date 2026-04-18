@@ -2,8 +2,9 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { Calendar, Clock, BookOpen, PenTool, AlertCircle, ShieldAlert } from "lucide-react";
 import TakeExam from "./TakeExam";
+import { API_URL } from "../config";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = `${API_URL}/api`;
 
 const StudentClassExam = () => {
   const [takingExam, setTakingExam] = useState(null);
