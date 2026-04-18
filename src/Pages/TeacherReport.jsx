@@ -26,9 +26,15 @@ const TeacherReport = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // ✅ Cheating logs state
+  const [cheatingLogs, setCheatingLogs] = useState([]);
+  const [cheatingLoading, setCheatingLoading] = useState(false);
+  const [cheatingError, setCheatingError] = useState(null);
+
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
   const teacherId = currentUser.id;
 
+  // Existing report fetch
   useEffect(() => {
     const fetchReport = async () => {
       try {
@@ -45,7 +51,36 @@ const TeacherReport = () => {
     fetchReport();
   }, [teacherId]);
 
-  /* ---------- Filter results by selected class ---------- */
+  // ✅ Fetch cheating logs when tab is opened
+  useEffect(() => {
+    if (activeTab !== "Cheating Logs") return;
+
+    const fetchCheatingLogs = async () => {
+      try {
+        setCheatingLoading(true);
+        setCheatingError(null);
+        const { data } = await axios.get(`/api/exams/cheating-attempts`, {
+          params: { teacherId },
+        });
+        setCheatingLogs(data.data || []);
+      } catch (err) {
+        setCheatingError(
+          err.response?.data?.message || "Failed to fetch cheating logs"
+        );
+      } finally {
+        setCheatingLoading(false);
+      }
+    };
+
+    fetchCheatingLogs();
+  }, [activeTab, teacherId]);
+
+  // ✅ Filter cheating logs by selected class
+  const filteredCheatingLogs = useMemo(() => {
+    if (selectedClass === "All Classes") return cheatingLogs;
+    return cheatingLogs.filter((log) => log.className === selectedClass);
+  }, [cheatingLogs, selectedClass]);
+
   const filteredResults = useMemo(() => {
     if (selectedClass === "All Classes") return results;
     return results.filter(
@@ -53,7 +88,6 @@ const TeacherReport = () => {
     );
   }, [results, selectedClass]);
 
-  /* ---------- Stats ---------- */
   const stats = useMemo(() => {
     if (!filteredResults.length)
       return { avgScore: "0%", passRate: "0%", flaggedCount: 0 };
@@ -66,16 +100,14 @@ const TeacherReport = () => {
 
     const passed = filteredResults.filter((r) => r.isPassed).length;
     const passRate = (passed / filteredResults.length) * 100;
-    const flaggedCount = filteredResults.filter((r) => r.isCheating).length;
 
     return {
       avgScore: `${avgScore.toFixed(1)}%`,
       passRate: `${passRate.toFixed(1)}%`,
-      flaggedCount,
+      flaggedCount: filteredCheatingLogs.length, // ✅ from dedicated API
     };
-  }, [filteredResults]);
+  }, [filteredResults, filteredCheatingLogs]);
 
-  /* ---------- Performance trend — avg score per exam ---------- */
   const performanceTrend = useMemo(() => {
     const examMap = {};
     filteredResults.forEach((r) => {
@@ -90,23 +122,6 @@ const TeacherReport = () => {
     }));
   }, [filteredResults]);
 
-  /* ---------- Cheating logs ---------- */
-  const cheatingLogs = useMemo(() => {
-    return filteredResults
-      .filter((r) => r.isCheating)
-      .map((r) => ({
-        id: r._id,
-        student: r.studentId?.name || "—",
-        rollNo: r.studentId?.rollNo || "—",
-        exam: r.examId?.title || "—",
-        reason: r.cheatingReason || "Suspicious activity",
-        submittedAt: r.submittedAt
-          ? new Date(r.submittedAt).toLocaleString()
-          : "—",
-      }));
-  }, [filteredResults]);
-
-  /* ---------- Student performance ---------- */
   const studentPerformance = useMemo(() => {
     const studentMap = {};
     filteredResults.forEach((r) => {
@@ -218,10 +233,9 @@ const TeacherReport = () => {
               }`}
             >
               {tab}
-              {/* Badge for cheating logs */}
-              {tab === "Cheating Logs" && cheatingLogs.length > 0 && (
+              {tab === "Cheating Logs" && filteredCheatingLogs.length > 0 && (
                 <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
-                  {cheatingLogs.length}
+                  {filteredCheatingLogs.length}
                 </span>
               )}
             </button>
@@ -267,10 +281,18 @@ const TeacherReport = () => {
             </div>
           )}
 
-          {/* Cheating Logs Tab */}
+          {/* ✅ Cheating Logs Tab */}
           {activeTab === "Cheating Logs" && (
             <div className="overflow-x-auto">
-              {cheatingLogs.length === 0 ? (
+              {cheatingLoading ? (
+                <div className="text-center py-16 text-[#0F6B75] font-medium">
+                  Loading cheating logs...
+                </div>
+              ) : cheatingError ? (
+                <div className="text-center py-16 text-red-500">
+                  {cheatingError}
+                </div>
+              ) : filteredCheatingLogs.length === 0 ? (
                 <div className="text-center py-16 text-gray-400">
                   No cheating cases detected.
                 </div>
@@ -279,28 +301,38 @@ const TeacherReport = () => {
                   <thead className="bg-gray-50 text-gray-700 font-medium border-b border-gray-200">
                     <tr>
                       <th className="px-6 py-4">Student</th>
-                      <th className="px-6 py-4">Roll No</th>
+                      <th className="px-6 py-4">Reg No</th>
+                      <th className="px-6 py-4">Class</th>
                       <th className="px-6 py-4">Exam</th>
                       <th className="px-6 py-4">Reason</th>
                       <th className="px-6 py-4">Submitted At</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {cheatingLogs.map((log) => (
+                    {filteredCheatingLogs.map((log, idx) => (
                       <tr
-                        key={log.id}
+                        key={idx}
                         className="hover:bg-gray-50 transition-colors"
                       >
                         <td className="px-6 py-4 font-medium text-gray-900">
-                          {log.student}
+                          {log.studentName}
                         </td>
-                        <td className="px-6 py-4 text-gray-500">{log.rollNo}</td>
-                        <td className="px-6 py-4 text-gray-600">{log.exam}</td>
+                        <td className="px-6 py-4 text-gray-500">
+                          {log.registrationNo || "—"}
+                        </td>
+                        <td className="px-6 py-4 text-gray-500">
+                          {log.className}
+                        </td>
+                        <td className="px-6 py-4 text-gray-600">
+                          {log.examTitle}
+                        </td>
                         <td className="px-6 py-4 text-red-600 font-medium">
-                          {log.reason}
+                          {log.cheatingReason || "Suspicious activity"}
                         </td>
                         <td className="px-6 py-4 text-gray-500 text-sm">
-                          {log.submittedAt}
+                          {log.submittedAt
+                            ? new Date(log.submittedAt).toLocaleString()
+                            : "—"}
                         </td>
                       </tr>
                     ))}
